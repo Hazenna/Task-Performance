@@ -19,7 +19,7 @@ public class SchoolSystem {
                     return c;
                 }
             } catch (NumberFormatException e) {
-                System.out.println("Please Enter a Number between " + min + " - " + max);
+                System.out.println("Please Enter a Number between " + min + " and " + max);
             }
         }
     }
@@ -30,12 +30,16 @@ public class SchoolSystem {
             int choice = choice(1, 5);
             if (choice == 1) {
                 students.displayAsUser();
+            } else {
+                System.out.println("Feature not implemented yet.");
             }
         } else if (user.equalsIgnoreCase("admin")) {
             System.out.println("1 - Edit student database\n2 - Edit available uniforms\n3 - Book available classrooms\n4 - Edit teacher database\n5 - Edit subjects available\n6 - Edit admin information");
             int choice = choice(1, 6);
-            if (choice == 1 ) {
+            if (choice == 1) {
                 students.displayAsAdmin();
+            } else {
+                System.out.println("Feature not implemented yet.");
             }
         }
     }
@@ -52,6 +56,7 @@ public class SchoolSystem {
             choicesMenu(user);
         } else {
             System.out.println("Unknown credential");
+            menu();
         }
     }
 

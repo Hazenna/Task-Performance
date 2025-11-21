@@ -40,13 +40,13 @@ public class StudentsDB implements PDI, APD, ASF {
     private String dob;
     private String contact;
     private String gender;
-    private String getGPA = "0";
+    private String getGPA = "0.0";
     private String course;
 
     @Override
     public void studentID() {
 
-        int idNum = r.nextInt();
+        int idNum = Math.abs(r.nextInt(100000));
         String id = String.valueOf(idNum);
         this.idString = id;
 
@@ -55,8 +55,8 @@ public class StudentsDB implements PDI, APD, ASF {
     @Override
     public void name() {
         System.out.print("Enter Name: ");
-        String name = s.nextLine();
-        this.name = name;
+        String nameString = s.nextLine();
+        this.name = nameString;
     }
 
     @Override
@@ -64,14 +64,13 @@ public class StudentsDB implements PDI, APD, ASF {
         System.out.print("Enter Date of Birth (MM/DD/YYYY): ");
         sentinel = true;
         while (sentinel) {
-            try {
-                int date = s.nextInt();
-                String dateToString = String.valueOf(date);
-                this.dob = dateToString;
-            } catch (InputMismatchException e) {
-                System.out.println("Enter a Sequence of Numbers (MM/DD/YYYY): ");
+            String dateInput = s.nextLine();
+            if (dateInput.matches("\\d{2}/\\d{2}/\\d{4}")) {
+                this.dob = dateInput;
+                sentinel = false;
+            } else {
+                System.out.print("Invalid format. Enter Date of Birth (MM/DD/YYYY): ");
             }
-
         }
     }
 
@@ -80,11 +79,12 @@ public class StudentsDB implements PDI, APD, ASF {
         sentinel = true;
         System.out.print("Enter Contact Number: ");
         while (sentinel) {
-            String contact = s.nextLine();
-            if (contact.equals("")) {
+            String contactString = s.nextLine().trim();
+            if (contactString.isEmpty()) {
                 System.out.print("Number is Needed, Please Enter Contact Number: ");
             } else {
-                this.contact = contact;
+                this.contact = contactString;
+                sentinel = false;
             }
         }
     }
@@ -92,11 +92,11 @@ public class StudentsDB implements PDI, APD, ASF {
     @Override
     public void gender() {
         System.out.print("Enter Gender(Optional, Leave Blank): ");
-        String gender = s.nextLine().strip();
-        if (gender.equals("")) {
+        String genderString = s.nextLine().strip();
+        if (genderString.isEmpty()) {
             this.gender = "Not given";
         } else {
-            this.gender = gender;
+            this.gender = genderString;
         }
     }
 
@@ -107,68 +107,86 @@ public class StudentsDB implements PDI, APD, ASF {
 
     @Override
     public void courseInformation() {
-        System.out.println("Enter Course or NA if Undicided: ");
-        String course = s.nextLine();
-        if (course.equalsIgnoreCase("NA")) {
+        System.out.println("Enter Course or 'NA' if Undicided: ");
+        String courseString = s.nextLine().trim();
+        if (courseString.equalsIgnoreCase("NA")) {
             this.course = "Undecided";
         } else {
-            this.course = course;
+            this.course = courseString;
         }
     }
 
     public void displayAsUser() {
-        System.out.println("Students in Database:");
-
+        System.out.println("Students in database:");
+        if (info.isEmpty()) {
+            System.out.println("No students found.");
+        } else {
+            for (String key : info.keySet()) {
+                System.out.println("ID: " + key + " - Details: " + info.get(key));
+            }
+        }
     }
 
     public void displayAsAdmin() {
         System.out.println("1 - Edit a student in database\n2 - Remove a student in database\n3 - add a student in database\n4 - to go back");
         sentinel = true;
         while (sentinel) {
-            int userChoice = system.choice(1, 4);
+            int userChoice = SchoolSystem.choice(1, 4);
             switch (userChoice) {
                 case 1 -> {
+                    System.out.println("Work in Progress");
                 }
                 case 2 -> {
+                    System.out.println("Work in Progress");
                 }
                 case 3 ->
                     addUser();
-                case 4 ->
+                case 4 -> {
                     system.menu();
+                    sentinel = false;
+                }
             }
         }
     }
 
     public void addUser() {
-        sentinel = true;
         studentID();
-        int id = Integer.parseInt(this.idString);
-        while (sentinel) {
-            System.out.println("Add a student? \n1 - Yes\n2 - No");
-            int userChoice = SchoolSystem.choice(1, 2);
-            if (userChoice == 1) {
-                String idNum = this.idString;
-                id = r.nextInt();
-                sentinel = true;
-                while (sentinel) {
-                    System.out.println("Enter The following Information for ID no. " + idNum);
-                    name();
-                    info.get(idNum).add(this.name);
-                    dob();
-                    info.get(idNum).add(this.dob);
-                    contactDetails();
-                    info.get(idNum).add(this.contact);
-                    gender();
-                    info.get(idNum).add(this.gender);
-                    //GPA method here
-                    info.get(idNum).add(this.getGPA);
-                    courseInformation();
-                    info.get(idNum).add(this.course);
-                    break;
-                }
-            } else if (userChoice == 2) {
+        info.putIfAbsent(this.idString, new ArrayList<>());
+        System.out.println("Adding student with ID: " + this.idString);
+
+        name();
+        info.get(this.idString).add(this.name);
+
+        dob();
+        info.get(this.idString).add(this.dob);
+
+        contactDetails();
+        info.get(this.idString).add(this.contact);
+
+        gender();
+        info.get(this.idString).add(this.gender);
+
+        GPA();
+        info.get(this.idString).add(this.getGPA);
+
+        courseInformation();
+        info.get(this.idString).add(this.course);
+
+        System.out.println("Student added successfully!");
+        System.out.println("Current students:");
+        for (String key : info.keySet()) {
+            System.out.println("ID: " + key + " - " + info.get(key));
+        }
+        
+        System.out.println("Press 1 to quit\nPress 2 to go back");
+        int choice = SchoolSystem.choice(1, 2);
+        
+        switch (choice) {
+            case 1 -> {
+                System.exit(0);
+            }
+            case 2 -> {
                 displayAsAdmin();
-                sentinel = false;
             }
         }
     }
