@@ -6,101 +6,150 @@ interface PDI {
 
     public void studentID();
 
-    public void name(String name);
+    public void name();
 
-    public void dob(int date, String month, int year);
+    public void dob();
 
-    public void contactDetails(String contactNum);
+    public void contactDetails();
 
-    public void gender(String gender);
+    public void gender();
 
 }
 
 interface APD {
 
-    public void GPA(double gpa);
+    public void GPA();
 
 }
 
 interface ASF {
 
-    public void courseInformation(String course);
+    public void courseInformation();
 
 }
 
 public class StudentsDB implements PDI, APD, ASF {
 
+    Map<String, ArrayList<String>> info = new HashMap<>();
+    static Scanner s = new Scanner(System.in);
+    public static SchoolSystem system = new SchoolSystem();
+    Random r = new Random();
+    private boolean sentinel;
+    private String idString;
+    private String name;
+    private String dob;
+    private String contact;
+    private String gender;
+    private String getGPA;
+    private String course;
+
     @Override
     public void studentID() {
 
-        Random r = new Random();
-
         int idNum = r.nextInt();
         String id = String.valueOf(idNum);
-        System.out.println(id);
+        this.idString = id;
 
     }
 
     @Override
-    public void name(String name) {
-        System.out.println(name);
+    public void name() {
+        System.out.print("Enter Name: ");
+        String name = s.nextLine();
+        this.name = name;
     }
 
     @Override
-    public void dob(int day, String month, int year) {
-        int monthNum = 0;
-        if (month.equalsIgnoreCase("January")) {
-            monthNum = 1;
-        } else if (month.equalsIgnoreCase("Febuary")) {
-            monthNum = 2;
-        } else if (month.equalsIgnoreCase("March")) {
-            monthNum = 3;
-        } else if (month.equalsIgnoreCase("April")) {
-            monthNum = 4;
-        } else if (month.equalsIgnoreCase("May")) {
-            monthNum = 5;
-        } else if (month.equalsIgnoreCase("June")) {
-            monthNum = 6;
-        } else if (month.equalsIgnoreCase("July")) {
-            monthNum = 7;
-        } else if (month.equalsIgnoreCase("August")) {
-            monthNum = 8;
-        } else if (month.equalsIgnoreCase("September")) {
-            monthNum = 9;
-        } else if (month.equalsIgnoreCase("October")) {
-            monthNum = 10;
-        } else if (month.equalsIgnoreCase("November")) {
-            monthNum = 11;
-        } else if (month.equalsIgnoreCase("December")) {
-            monthNum = 12;
-        } else {
-            System.out.println("Unknown Month");
+    public void dob() {
+        System.out.print("Enter Date of Birth (MM/DD/YYYY): ");
+        String date = s.nextLine();
+        this.dob = date;
+    }
+
+    @Override
+    public void contactDetails() {
+        sentinel = true;
+        System.out.print("Enter Contact Number: ");
+        while (sentinel) {
+            String contact = s.nextLine();
+            if (contact.equals("")) {
+                System.out.print("Number is Needed, Please Enter Contact Number: ");
+            } else {
+                this.contact = contact;
+            }
         }
-        System.out.println(monthNum + "/" + day + "/" + year);
-    }
-    
-    public void dob(int day, int month, int year) {
-        System.out.println(month + "/" + day + "/" + year);
     }
 
     @Override
-    public void contactDetails(String contactNum) {
-        System.out.println(contactNum);
+    public void gender() {
+        System.out.print("Enter Gender(Optional, Leave Blank): ");
+        String gender = s.nextLine().strip();
+        if (gender.equals("")) {
+            this.gender = "Not given";
+        } else {
+            this.gender = gender;
+        }
     }
 
     @Override
-    public void gender(String gender) {
-        System.out.println(gender);
+    public void GPA() {
+        //Will need cooperation on Subjects to implement a method for calculating GPA
     }
 
     @Override
-    public void GPA(double gpa) {
-        System.out.println(gpa);
+    public void courseInformation() {
+        System.out.println("Enter Course or NA if Undicided: ");
+        String course = s.nextLine();
+        if (course.equalsIgnoreCase("NA")) {
+            this.course = "Undecided";
+        } else {
+            this.course = course;
+        }
     }
 
-    @Override
-    public void courseInformation(String course) {
-        System.out.println(course);
+    public void displayAsUser() {
+        System.out.println("Students in Database:");
+
+    }
+
+    public void displayAsAdmin() {
+        System.out.println("1 - Edit a student in database\n2 - Remove a student in database\n3 - add a student in database\n4 - to go back");
+        sentinel = true;
+        while (sentinel) {
+            int userChoice = system.choice(1, 4);
+            switch (userChoice) {
+                case 1 -> {
+                }
+                case 2 -> {
+                }
+                case 3 ->
+                    addUser();
+                case 4 ->
+                    system.menu();
+            }
+        }
+    }
+
+    public void addUser() {
+        sentinel = true;
+        studentID();
+        int id = Integer.parseInt(this.idString);
+        while (sentinel) {
+            System.out.println("Add a student? \n1 - Yes\n2 - No");
+            int userChoice = system.choice(1, 2);
+            if (userChoice == 1) {
+                String idNum = this.idString;
+                id = r.nextInt();
+                sentinel = true;
+                while (sentinel) {
+                    System.out.println("Enter The following Information for ID no. " + idNum);
+
+                }
+            } else if (userChoice == 2) {
+                displayAsAdmin();
+                sentinel = false;
+            }
+        }
     }
 
 }
