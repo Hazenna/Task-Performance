@@ -40,7 +40,7 @@ public class StudentsDB implements PDI, APD, ASF {
     private String dob;
     private String contact;
     private String gender;
-    private String getGPA;
+    private String getGPA = "0";
     private String course;
 
     @Override
@@ -62,8 +62,17 @@ public class StudentsDB implements PDI, APD, ASF {
     @Override
     public void dob() {
         System.out.print("Enter Date of Birth (MM/DD/YYYY): ");
-        String date = s.nextLine();
-        this.dob = date;
+        sentinel = true;
+        while (sentinel) {
+            try {
+                int date = s.nextInt();
+                String dateToString = String.valueOf(date);
+                this.dob = dateToString;
+            } catch (InputMismatchException e) {
+                System.out.println("Enter a Sequence of Numbers (MM/DD/YYYY): ");
+            }
+
+        }
     }
 
     @Override
@@ -136,14 +145,26 @@ public class StudentsDB implements PDI, APD, ASF {
         int id = Integer.parseInt(this.idString);
         while (sentinel) {
             System.out.println("Add a student? \n1 - Yes\n2 - No");
-            int userChoice = system.choice(1, 2);
+            int userChoice = SchoolSystem.choice(1, 2);
             if (userChoice == 1) {
                 String idNum = this.idString;
                 id = r.nextInt();
                 sentinel = true;
                 while (sentinel) {
                     System.out.println("Enter The following Information for ID no. " + idNum);
-
+                    name();
+                    info.get(idNum).add(this.name);
+                    dob();
+                    info.get(idNum).add(this.dob);
+                    contactDetails();
+                    info.get(idNum).add(this.contact);
+                    gender();
+                    info.get(idNum).add(this.gender);
+                    //GPA method here
+                    info.get(idNum).add(this.getGPA);
+                    courseInformation();
+                    info.get(idNum).add(this.course);
+                    break;
                 }
             } else if (userChoice == 2) {
                 displayAsAdmin();

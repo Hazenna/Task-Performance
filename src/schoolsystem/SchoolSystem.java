@@ -6,7 +6,7 @@ public class SchoolSystem {
 
     public StudentsDB students = new StudentsDB();
     static Scanner s = new Scanner(System.in);
-    private String admin = "Admin";
+    private final String admin = "Admin";
     public static SchoolSystem system = new SchoolSystem();
 
     static int choice(int min, int max) {
