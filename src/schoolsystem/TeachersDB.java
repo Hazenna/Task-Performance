@@ -1,17 +1,27 @@
 package schoolsystem;
+
 import java.util.*;
 
-interface TPDI { 
+interface TPDI {
+
     void teacherID();
+
     void name();
+
     void dob();
+
     void contactDetails();
+
     void gender();
 }
-interface TInfo { 
+
+interface TInfo {
+
     void assignedSubject();
+
     void timeSchedule();
 }
+
 public class TeachersDB implements TPDI, TInfo {
 
     Map<String, ArrayList<String>> info = new HashMap<>();
@@ -27,7 +37,6 @@ public class TeachersDB implements TPDI, TInfo {
     private String gender;
     private String subject = "None";
     private String schedule = "Not Assigned";
-
 
     @Override
     public void teacherID() {
@@ -73,6 +82,7 @@ public class TeachersDB implements TPDI, TInfo {
             }
         }
     }
+
     @Override
     public void gender() {
         System.out.print("Enter Gender (Optional, leave blank): ");
@@ -109,6 +119,7 @@ public class TeachersDB implements TPDI, TInfo {
             System.out.println("Schedule: " + list.get(5));
         });
     }
+
     public void displayAsAdmin() {
         System.out.println("\n1 - Edit Teacher in Database");
         System.out.println("2 - Remove Teacher");
@@ -119,13 +130,18 @@ public class TeachersDB implements TPDI, TInfo {
         while (sentinel) {
             int userChoice = SchoolSystem.choice(1, 4);
             switch (userChoice) {
-                case 1 -> editTeacher();
-                case 2 -> removeTeacher();
-                case 3 -> addTeacher();
-                case 4 -> system.menu();
+                case 1 ->
+                    editTeacher();
+                case 2 ->
+                    removeTeacher();
+                case 3 ->
+                    addTeacher();
+                case 4 ->
+                    system.menu();
             }
         }
     }
+
     public void addTeacher() {
         sentinel = true;
         teacherID();
@@ -165,6 +181,7 @@ public class TeachersDB implements TPDI, TInfo {
             }
         }
     }
+
     private void removeTeacher() {
         System.out.print("Enter Teacher ID to remove: ");
         String rem = s.nextLine();
@@ -176,6 +193,7 @@ public class TeachersDB implements TPDI, TInfo {
             System.out.println("Teacher ID not found.");
         }
     }
+
     private void editTeacher() {
         System.out.print("Enter Teacher ID to edit: ");
         String id = s.nextLine();

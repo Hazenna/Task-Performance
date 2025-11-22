@@ -129,8 +129,7 @@ public class StudentsDB implements PDI, APD, ASF {
         int choice = SchoolSystem.choice(1, 2);
         if (choice == 1) {
             system.menu();
-        }
-        else if (choice == 2) {
+        } else if (choice == 2) {
             System.exit(0);
         }
     }
@@ -355,8 +354,7 @@ public class StudentsDB implements PDI, APD, ASF {
             } else if (choice.equalsIgnoreCase("n")) {
                 System.out.println("Removal Canvelled");
                 sentinel = false;
-            }
-            else {
+            } else {
                 System.out.println("Please input Y or N");
             }
         }
