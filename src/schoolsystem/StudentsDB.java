@@ -125,6 +125,14 @@ public class StudentsDB implements PDI, APD, ASF {
                 System.out.println("ID: " + key + " - Details: " + info.get(key));
             }
         }
+        System.out.println("1 - Back\n2 - Exit");
+        int choice = SchoolSystem.choice(1, 2);
+        if (choice == 1) {
+            system.menu();
+        }
+        else if (choice == 2) {
+            System.exit(0);
+        }
     }
 
     public void displayAsAdmin() {
@@ -134,13 +142,13 @@ public class StudentsDB implements PDI, APD, ASF {
             int userChoice = SchoolSystem.choice(1, 4);
             switch (userChoice) {
                 case 1 -> {
-                    System.out.println("Work in Progress");
+                    editStudent();
                 }
                 case 2 -> {
-                    System.out.println("Work in Progress");
+                    removeStudent();
                 }
                 case 3 ->
-                    addUser();
+                    addStudent();
                 case 4 -> {
                     system.menu();
                     sentinel = false;
@@ -149,7 +157,7 @@ public class StudentsDB implements PDI, APD, ASF {
         }
     }
 
-    public void addUser() {
+    public void addStudent() {
         studentID();
         info.putIfAbsent(this.idString, new ArrayList<>());
         System.out.println("Adding student with ID: " + this.idString);
@@ -177,16 +185,179 @@ public class StudentsDB implements PDI, APD, ASF {
         for (String key : info.keySet()) {
             System.out.println("ID: " + key + " - " + info.get(key));
         }
-        
+
         System.out.println("Press 1 to quit\nPress 2 to go back");
         int choice = SchoolSystem.choice(1, 2);
-        
+
         switch (choice) {
             case 1 -> {
                 System.exit(0);
             }
             case 2 -> {
                 displayAsAdmin();
+            }
+        }
+    }
+
+    public void editStudent() {
+        System.out.print("Enter name of student you want to change information: ");
+        String searchName = s.nextLine().trim();
+
+        List<String> matchedKeys = new ArrayList<>();
+        for (String key : info.keySet()) {
+            ArrayList<String> details = info.get(key);
+            if (!details.isEmpty() && details.get(0).equalsIgnoreCase(searchName)) {
+                matchedKeys.add(key);
+            }
+        }
+
+        if (matchedKeys.isEmpty()) {
+            System.out.println("No student found in database with the name " + searchName);
+            return;
+        }
+
+        String selectedKey;
+        if (matchedKeys.size() == 1) {
+            selectedKey = matchedKeys.get(0);
+        } else {
+            System.out.println("Multiple students foudn with that name:");
+            for (String key : matchedKeys) {
+                ArrayList<String> details = info.get(key);
+                System.out.println("ID: " + key + " - " + details);
+            }
+
+            System.out.print("Enter ID of student you want to change information: ");
+            selectedKey = s.nextLine().trim();
+            if (!matchedKeys.contains(selectedKey)) {
+                System.out.println("Invalid ID inputted");
+                return;
+            }
+        }
+
+        ArrayList<String> details = info.get(selectedKey);
+        System.out.println("Current details for ID " + selectedKey + ":");
+        System.out.println("Name: " + details.get(0));
+        System.out.println("DOB: " + details.get(1));
+        System.out.println("Contact: " + details.get(2));
+        System.out.println("Gender: " + details.get(3));
+        System.out.println("GPA: " + details.get(4));
+        System.out.println("Course: " + details.get(5));
+
+        System.out.println("Enter the new values (leave blank to keep current values):");
+
+        System.out.print("New name: ");
+        String newName = s.nextLine().trim();
+        if (!newName.isEmpty()) {
+            details.set(0, newName);
+        }
+
+        System.out.print("New DOB (MM/DD/YYYY): ");
+        String newDob = s.nextLine().trim();
+        if (!newDob.isEmpty()) {
+            if (newDob.matches("\\d{2}/\\d{2}/\\d{4}")) {
+                details.set(1, newDob);
+            } else {
+                System.out.println("Invalid DOB format. Keeping current.");
+            }
+        }
+
+        System.out.print("New Contact: ");
+        String newContact = s.nextLine().trim();
+        if (!newContact.isEmpty()) {
+            details.set(2, newContact);
+        }
+
+        System.out.print("New Gender: ");
+        String newGender = s.nextLine().trim();
+        if (!newGender.isEmpty()) {
+            details.set(3, newGender);
+        }
+
+        System.out.print("New GPA: "); //Not final, will need collaboration with the teachers section
+        String newGpa = s.nextLine().trim();
+        if (!newGpa.isEmpty()) {
+            try {
+                double gpa = Double.parseDouble(newGpa);
+                if (gpa >= 0.0 && gpa <= 4.0) {
+                    details.set(4, String.valueOf(gpa));
+                } else {
+                    System.out.println("Invalid GPA. Keeping current.");
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid GPA input. Keeping current.");
+            }
+        }
+
+        System.out.print("New Course: ");
+        String newCourse = s.nextLine().trim();
+        if (!newCourse.isEmpty()) {
+            if (newCourse.equalsIgnoreCase("NA")) {
+                details.set(5, "Undecided");
+            } else {
+                details.set(5, newCourse);
+            }
+        }
+
+        System.out.println("Student details updated successfully!");
+        System.out.println("Updated details: " + details);
+    }
+
+    public void removeStudent() {
+        if (info.isEmpty()) {
+            System.out.println("No students in database to remove");
+            return;
+        }
+
+        System.out.print("Enter name of student you want to change information: ");
+        String searchName = s.nextLine().trim();
+
+        List<String> matchedKeys = new ArrayList<>();
+        for (String key : info.keySet()) {
+            ArrayList<String> details = info.get(key);
+            if (!details.isEmpty() && details.get(0).equalsIgnoreCase(searchName)) {
+                matchedKeys.add(key);
+            }
+        }
+
+        if (matchedKeys.isEmpty()) {
+            System.out.println("No student found in database with the name " + searchName);
+            return;
+        }
+
+        String selectedKey;
+        if (matchedKeys.size() == 1) {
+            selectedKey = matchedKeys.get(0);
+        } else {
+            System.out.println("Multiple students foudn with that name:");
+            for (String key : matchedKeys) {
+                ArrayList<String> details = info.get(key);
+                System.out.println("ID: " + key + " - " + details);
+            }
+
+            System.out.print("Enter ID of student you want to remove from database: ");
+            selectedKey = s.nextLine().trim();
+            if (!matchedKeys.contains(selectedKey)) {
+                System.out.println("Invalid ID inputted");
+                return;
+            }
+        }
+
+        ArrayList<String> details = info.get(selectedKey);
+        System.out.println("Student to remove ID: " + selectedKey + " - Details: " + details);
+        sentinel = true;
+        while (sentinel) {
+            System.out.print("Confirm removal?(Y/N): ");
+            String choice = s.nextLine().trim();
+            if (choice.equalsIgnoreCase("y")) {
+                info.remove(selectedKey);
+                System.out.println("Student removed successfully");
+                sentinel = false;
+            } else if (choice.equalsIgnoreCase("n")) {
+                System.out.println("Removal Canvelled");
+                sentinel = false;
+            }
+            else {
+                System.out.println("Please input Y or N");
             }
         }
     }
