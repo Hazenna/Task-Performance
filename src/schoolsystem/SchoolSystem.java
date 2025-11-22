@@ -8,6 +8,8 @@ public class SchoolSystem {
     static Scanner s = new Scanner(System.in);
     private final String admin = "Admin";
     public static SchoolSystem system = new SchoolSystem();
+    public static Teachers teacher = new Teachers();
+    public static TeachersDB tdb = new TeachersDB();
 
     static int choice(int min, int max) {
         while (true) {
@@ -28,18 +30,23 @@ public class SchoolSystem {
         if (user.equalsIgnoreCase("user")) {
             System.out.println("1 - Access student database\n2 - View available uniforms\n3 - View available classrooms\n4 - Access teacher database\n5 - View subjects available");
             int choice = choice(1, 5);
-            if (choice == 1) {
-                students.displayAsUser();
-            } else {
-                System.out.println("Feature not implemented yet.");
+            switch (choice) {
+                case 1 -> students.displayAsUser();
+                case 2 -> System.out.println("Feature not implemented yet.");
+                case 3 -> System.out.println("Feature not implemented yet.");
+                case 4 -> tdb.displayAsUser();
+                case 5 -> System.out.println("Feature not implemented yet.");
             }
-        } else if (user.equalsIgnoreCase("admin")) {
+        } else if (user.equals(admin)) {
             System.out.println("1 - Edit student database\n2 - Edit available uniforms\n3 - Book available classrooms\n4 - Edit teacher database\n5 - Edit subjects available\n6 - Edit admin information");
             int choice = choice(1, 6);
-            if (choice == 1) {
-                students.displayAsAdmin();
-            } else {
-                System.out.println("Feature not implemented yet.");
+            switch (choice) {
+                case 1 -> students.displayAsAdmin();
+                case 2 -> System.out.println("Feature not implemented yet.");
+                case 3 -> System.out.println("Feature not implemented yet.");
+                case 4 -> tdb.displayAsAdmin();
+                case 5 -> System.out.println("Feature not implemented yet.");
+                case 6 -> System.out.println("Feature not implemented yet");
             }
         }
     }

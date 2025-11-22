@@ -28,6 +28,7 @@ public class TeachersDB implements TPDI, TInfo {
     static Scanner s = new Scanner(System.in);
     public static SchoolSystem system = new SchoolSystem();
     Random r = new Random();
+    Teachers menu = new Teachers();
 
     private boolean sentinel;
     private String idString;
@@ -124,11 +125,12 @@ public class TeachersDB implements TPDI, TInfo {
         System.out.println("\n1 - Edit Teacher in Database");
         System.out.println("2 - Remove Teacher");
         System.out.println("3 - Add Teacher");
-        System.out.println("4 - Go Back");
+        System.out.println("4 - Access Teachers User Menu");
+        System.out.println("5 - Go Back");
 
         sentinel = true;
         while (sentinel) {
-            int userChoice = SchoolSystem.choice(1, 4);
+            int userChoice = SchoolSystem.choice(1, 5);
             switch (userChoice) {
                 case 1 ->
                     editTeacher();
@@ -136,7 +138,9 @@ public class TeachersDB implements TPDI, TInfo {
                     removeTeacher();
                 case 3 ->
                     addTeacher();
-                case 4 ->
+                case 4 -> 
+                    menu.login();
+                case 5 ->
                     system.menu();
             }
         }
