@@ -132,16 +132,26 @@ public class TeachersDB implements TPDI, TInfo {
         while (sentinel) {
             int userChoice = SchoolSystem.choice(1, 5);
             switch (userChoice) {
-                case 1 ->
+                case 1 -> {
                     editTeacher();
-                case 2 ->
+                    sentinel = false;
+                }
+                case 2 -> {
                     removeTeacher();
-                case 3 ->
+                    sentinel = false;
+                }
+                case 3 -> {
                     addTeacher();
-                case 4 -> 
+                    sentinel = false;
+                }
+                case 4 -> {
                     menu.login();
-                case 5 ->
+                    sentinel = false;
+                }
+                case 5 -> {
                     system.menu();
+                    sentinel = false;
+                }
             }
         }
     }
@@ -196,6 +206,18 @@ public class TeachersDB implements TPDI, TInfo {
         } else {
             System.out.println("Teacher ID not found.");
         }
+
+        System.out.println("Press 1 to quit\nPress 2 to go back");
+        int choice = SchoolSystem.choice(1, 2);
+
+        switch (choice) {
+            case 1 -> {
+                System.exit(0);
+            }
+            case 2 -> {
+                displayAsAdmin();
+            }
+        }
     }
 
     private void editTeacher() {
@@ -241,5 +263,17 @@ public class TeachersDB implements TPDI, TInfo {
         }
 
         System.out.println("Teacher Updated.");
+
+        System.out.println("Press 1 to quit\nPress 2 to go back");
+        int choice = SchoolSystem.choice(1, 2);
+
+        switch (choice) {
+            case 1 -> {
+                System.exit(0);
+            }
+            case 2 -> {
+                displayAsAdmin();
+            }
+        }
     }
 }

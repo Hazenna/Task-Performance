@@ -40,7 +40,7 @@ public class StudentsDB implements PDI, APD, ASF {
     private String dob;
     private String contact;
     private String gender;
-    private String getGPA = "0.0";
+    private final String getGPA = "0.0";
     private String course;
 
     @Override
@@ -138,16 +138,20 @@ public class StudentsDB implements PDI, APD, ASF {
         System.out.println("1 - Edit a student in database\n2 - Remove a student in database\n3 - add a student in database\n4 - to go back");
         sentinel = true;
         while (sentinel) {
-            int userChoice = SchoolSystem.choice(1, 4);
+            int userChoice = SchoolSystem.choice(1, 5);
             switch (userChoice) {
                 case 1 -> {
                     editStudent();
+                    sentinel = false;
                 }
                 case 2 -> {
                     removeStudent();
+                    sentinel = false;
                 }
-                case 3 ->
+                case 3 -> {
                     addStudent();
+                    sentinel = false;
+                }
                 case 4 -> {
                     system.menu();
                     sentinel = false;
@@ -199,8 +203,12 @@ public class StudentsDB implements PDI, APD, ASF {
     }
 
     public void editStudent() {
-        System.out.print("Enter name of student you want to change information: ");
+        System.out.print("Enter name of student you want to change information or type B to return to the admin menu: ");
         String searchName = s.nextLine().trim();
+        
+        if (searchName.equalsIgnoreCase("B")) {
+            displayAsAdmin();
+        }
 
         List<String> matchedKeys = new ArrayList<>();
         for (String key : info.keySet()) {
@@ -212,7 +220,7 @@ public class StudentsDB implements PDI, APD, ASF {
 
         if (matchedKeys.isEmpty()) {
             System.out.println("No student found in database with the name " + searchName);
-            return;
+            editStudent();
         }
 
         String selectedKey;
@@ -299,6 +307,18 @@ public class StudentsDB implements PDI, APD, ASF {
 
         System.out.println("Student details updated successfully!");
         System.out.println("Updated details: " + details);
+
+        System.out.println("Press 1 to quit\nPress 2 to go back");
+        int choice = SchoolSystem.choice(1, 2);
+
+        switch (choice) {
+            case 1 -> {
+                System.exit(0);
+            }
+            case 2 -> {
+                displayAsAdmin();
+            }
+        }
     }
 
     public void removeStudent() {
@@ -356,6 +376,18 @@ public class StudentsDB implements PDI, APD, ASF {
                 sentinel = false;
             } else {
                 System.out.println("Please input Y or N");
+            }
+        }
+
+        System.out.println("Press 1 to quit\nPress 2 to go back");
+        int choice = SchoolSystem.choice(1, 2);
+
+        switch (choice) {
+            case 1 -> {
+                System.exit(0);
+            }
+            case 2 -> {
+                displayAsAdmin();
             }
         }
     }
