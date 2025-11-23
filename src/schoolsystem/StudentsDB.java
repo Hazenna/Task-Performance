@@ -30,25 +30,23 @@ interface ASF {
 
 public class StudentsDB implements PDI, APD, ASF {
 
-    Map<String, ArrayList<String>> info = new HashMap<>();
+    public DB studentData = new DB();
     static Scanner s = new Scanner(System.in);
     public static SchoolSystem system = new SchoolSystem();
-    Random r = new Random();
     private boolean sentinel;
     private String idString;
     private String name;
     private String dob;
     private String contact;
     private String gender;
-    private final String getGPA = "0.0";
+    private String getGPA = "0.0";
     private String course;
+    private static int idCounter = 1;
 
     @Override
     public void studentID() {
 
-        int idNum = Math.abs(r.nextInt(100000));
-        String id = String.valueOf(idNum);
-        this.idString = id;
+        this.idString = String.valueOf(idCounter++);
 
     }
 
@@ -102,14 +100,23 @@ public class StudentsDB implements PDI, APD, ASF {
 
     @Override
     public void GPA() {
-        //Will need cooperation on Subjects to implement a method for calculating GPA
+        double total = 0.0;
+        int count = 0;
+
+        for (Map.Entry<String, Integer> entry : SchoolSystem.teacher.grades.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(this.name)) {
+                total += entry.getValue();
+                count++;
+            }
+        }
+        this.getGPA = count > 0 ? String.format("%.2f", total / count) : "0.00";
     }
 
     @Override
     public void courseInformation() {
-        System.out.println("Enter Course or 'NA' if Undicided: ");
+        System.out.print("Enter Course or 'NA' if Undicided: ");
         String courseString = s.nextLine().trim();
-        if (courseString.equalsIgnoreCase("NA")) {
+        if (courseString.equalsIgnoreCase("") || courseString.equalsIgnoreCase("NA")) {
             this.course = "Undecided";
         } else {
             this.course = courseString;
@@ -118,11 +125,14 @@ public class StudentsDB implements PDI, APD, ASF {
 
     public void displayAsUser() {
         System.out.println("Students in database:");
-        if (info.isEmpty()) {
+        if (studentData.info.isEmpty()) {
             System.out.println("No students found.");
         } else {
-            for (String key : info.keySet()) {
-                System.out.println("ID: " + key + " - Details: " + info.get(key));
+            for (String key : studentData.info.keySet()) {
+                ArrayList<String> details = studentData.info.get(key);
+                System.out.println("ID: " + key + " | Name: " + details.get(0) + " | DOB: "
+                        + details.get(1) + " | Contact: " + details.get(2) + " | Gender: " + details.get(3)
+                        + " | GPA: " + details.get(4) + " | Course: " + details.get(5));
             }
         }
         System.out.println("1 - Back\n2 - Exit");
@@ -135,9 +145,13 @@ public class StudentsDB implements PDI, APD, ASF {
     }
 
     public void displayAsAdmin() {
-        System.out.println("1 - Edit a student in database\n2 - Remove a student in database\n3 - add a student in database\n4 - to go back");
         sentinel = true;
         while (sentinel) {
+            System.out.println("""
+                           1 - Edit a student in database
+                           2 - Remove a student in database
+                           3 - add a student in database
+                           4 - to go back""");
             int userChoice = SchoolSystem.choice(1, 5);
             switch (userChoice) {
                 case 1 -> {
@@ -162,32 +176,29 @@ public class StudentsDB implements PDI, APD, ASF {
 
     public void addStudent() {
         studentID();
-        info.putIfAbsent(this.idString, new ArrayList<>());
+        studentData.info.putIfAbsent(this.idString, new ArrayList<>());
         System.out.println("Adding student with ID: " + this.idString);
 
         name();
-        info.get(this.idString).add(this.name);
+        studentData.info.get(this.idString).add(this.name);
 
         dob();
-        info.get(this.idString).add(this.dob);
+        studentData.info.get(this.idString).add(this.dob);
 
         contactDetails();
-        info.get(this.idString).add(this.contact);
+        studentData.info.get(this.idString).add(this.contact);
 
         gender();
-        info.get(this.idString).add(this.gender);
+        studentData.info.get(this.idString).add(this.gender);
 
         GPA();
-        info.get(this.idString).add(this.getGPA);
+        studentData.info.get(this.idString).add(this.getGPA);
 
         courseInformation();
-        info.get(this.idString).add(this.course);
+        studentData.info.get(this.idString).add(this.course);
 
         System.out.println("Student added successfully!");
-        System.out.println("Current students:");
-        for (String key : info.keySet()) {
-            System.out.println("ID: " + key + " - " + info.get(key));
-        }
+        studentData.saveToFile("Studentdatabase.txt");
 
         System.out.println("Press 1 to quit\nPress 2 to go back");
         int choice = SchoolSystem.choice(1, 2);
@@ -205,14 +216,15 @@ public class StudentsDB implements PDI, APD, ASF {
     public void editStudent() {
         System.out.print("Enter name of student you want to change information or type B to return to the admin menu: ");
         String searchName = s.nextLine().trim();
-        
+
         if (searchName.equalsIgnoreCase("B")) {
             displayAsAdmin();
+            return;
         }
 
         List<String> matchedKeys = new ArrayList<>();
-        for (String key : info.keySet()) {
-            ArrayList<String> details = info.get(key);
+        for (String key : studentData.info.keySet()) {
+            ArrayList<String> details = studentData.info.get(key);
             if (!details.isEmpty() && details.get(0).equalsIgnoreCase(searchName)) {
                 matchedKeys.add(key);
             }
@@ -221,6 +233,7 @@ public class StudentsDB implements PDI, APD, ASF {
         if (matchedKeys.isEmpty()) {
             System.out.println("No student found in database with the name " + searchName);
             editStudent();
+            return;
         }
 
         String selectedKey;
@@ -229,7 +242,7 @@ public class StudentsDB implements PDI, APD, ASF {
         } else {
             System.out.println("Multiple students foudn with that name:");
             for (String key : matchedKeys) {
-                ArrayList<String> details = info.get(key);
+                ArrayList<String> details = studentData.info.get(key);
                 System.out.println("ID: " + key + " - " + details);
             }
 
@@ -241,7 +254,7 @@ public class StudentsDB implements PDI, APD, ASF {
             }
         }
 
-        ArrayList<String> details = info.get(selectedKey);
+        ArrayList<String> details = studentData.info.get(selectedKey);
         System.out.println("Current details for ID " + selectedKey + ":");
         System.out.println("Name: " + details.get(0));
         System.out.println("DOB: " + details.get(1));
@@ -298,7 +311,7 @@ public class StudentsDB implements PDI, APD, ASF {
         System.out.print("New Course: ");
         String newCourse = s.nextLine().trim();
         if (!newCourse.isEmpty()) {
-            if (newCourse.equalsIgnoreCase("NA")) {
+            if (newCourse.equalsIgnoreCase("NA") || newCourse.equalsIgnoreCase("")) {
                 details.set(5, "Undecided");
             } else {
                 details.set(5, newCourse);
@@ -306,6 +319,7 @@ public class StudentsDB implements PDI, APD, ASF {
         }
 
         System.out.println("Student details updated successfully!");
+        studentData.saveToFile("Studentdatabase.txt");
         System.out.println("Updated details: " + details);
 
         System.out.println("Press 1 to quit\nPress 2 to go back");
@@ -322,17 +336,23 @@ public class StudentsDB implements PDI, APD, ASF {
     }
 
     public void removeStudent() {
-        if (info.isEmpty()) {
+        if (studentData.info.isEmpty()) {
             System.out.println("No students in database to remove");
+            displayAsAdmin();
             return;
         }
 
-        System.out.print("Enter name of student you want to change information: ");
+        System.out.print("Enter name of student you want to remove or type B to exit to the Admin Menu: ");
         String searchName = s.nextLine().trim();
 
+        if (searchName.equalsIgnoreCase("B")) {
+            displayAsAdmin();
+            return;
+        }
+
         List<String> matchedKeys = new ArrayList<>();
-        for (String key : info.keySet()) {
-            ArrayList<String> details = info.get(key);
+        for (String key : studentData.info.keySet()) {
+            ArrayList<String> details = studentData.info.get(key);
             if (!details.isEmpty() && details.get(0).equalsIgnoreCase(searchName)) {
                 matchedKeys.add(key);
             }
@@ -349,7 +369,7 @@ public class StudentsDB implements PDI, APD, ASF {
         } else {
             System.out.println("Multiple students foudn with that name:");
             for (String key : matchedKeys) {
-                ArrayList<String> details = info.get(key);
+                ArrayList<String> details = studentData.info.get(key);
                 System.out.println("ID: " + key + " - " + details);
             }
 
@@ -361,15 +381,16 @@ public class StudentsDB implements PDI, APD, ASF {
             }
         }
 
-        ArrayList<String> details = info.get(selectedKey);
+        ArrayList<String> details = studentData.info.get(selectedKey);
         System.out.println("Student to remove ID: " + selectedKey + " - Details: " + details);
         sentinel = true;
         while (sentinel) {
             System.out.print("Confirm removal?(Y/N): ");
             String choice = s.nextLine().trim();
             if (choice.equalsIgnoreCase("y")) {
-                info.remove(selectedKey);
+                studentData.info.remove(selectedKey);
                 System.out.println("Student removed successfully");
+                studentData.saveToFile("Studentdatabase.txt");
                 sentinel = false;
             } else if (choice.equalsIgnoreCase("n")) {
                 System.out.println("Removal Canvelled");

@@ -24,11 +24,11 @@ interface TInfo {
 
 public class TeachersDB implements TPDI, TInfo {
 
-    Map<String, ArrayList<String>> info = new HashMap<>();
     static Scanner s = new Scanner(System.in);
     public static SchoolSystem system = new SchoolSystem();
-    Random r = new Random();
+    private static int idCounter = 1;
     Teachers menu = new Teachers();
+    public DB teachersData = new DB();
 
     private boolean sentinel;
     private String idString;
@@ -41,30 +41,27 @@ public class TeachersDB implements TPDI, TInfo {
 
     @Override
     public void teacherID() {
-        int idNum = Math.abs(r.nextInt());
-        String id = String.valueOf(idNum);
-        this.idString = id;
-        info.put(id, new ArrayList<>());
+        this.idString = String.valueOf(idCounter++);
+        teachersData.info.put(idString, new ArrayList<>());
     }
 
     @Override
     public void name() {
         System.out.print("Enter Teacher Name: ");
-        this.name = s.nextLine();
+        this.name = s.nextLine().trim();
     }
 
     @Override
     public void dob() {
-        System.out.print("Enter Date of Birth (MMDDYYYY): ");
+        System.out.print("Enter Date of Birth (MM/DD/YYYY): ");
         sentinel = true;
         while (sentinel) {
-            try {
-                String date = s.nextLine().trim();
-                Integer.valueOf(date);
+            String date = s.nextLine().trim();
+            if (date.matches("\\d{2}/\\d{2}/\\d{4}")) {
                 this.dob = date;
                 sentinel = false;
-            } catch (NumberFormatException e) {
-                System.out.print("Invalid format. Use numbers only (MMDDYYYY): ");
+            } else {
+                System.out.print("Invalid format. Use numbers only (MM/DD/YYYY): ");
             }
         }
     }
@@ -94,23 +91,23 @@ public class TeachersDB implements TPDI, TInfo {
     @Override
     public void assignedSubject() {
         System.out.print("Enter Assigned Subject: ");
-        this.subject = s.nextLine();
+        this.subject = s.nextLine().trim();
     }
 
     @Override
     public void timeSchedule() {
         System.out.print("Enter Teacher Time Schedule: ");
-        this.schedule = s.nextLine();
+        this.schedule = s.nextLine().trim();
     }
 
     public void displayAsUser() {
         System.out.println("\nTeachers in Database:");
-        if (info.isEmpty()) {
+        if (teachersData.info.isEmpty()) {
             System.out.println("No teachers available.");
             return;
         }
 
-        info.forEach((id, list) -> {
+        teachersData.info.forEach((id, list) -> {
             System.out.println("\nTeacher ID: " + id);
             System.out.println("Name: " + list.get(0));
             System.out.println("DOB: " + list.get(1));
@@ -119,17 +116,24 @@ public class TeachersDB implements TPDI, TInfo {
             System.out.println("Subject: " + list.get(4));
             System.out.println("Schedule: " + list.get(5));
         });
+        System.out.println("1 - Back\n2 - Exit");
+        int choice = SchoolSystem.choice(1, 2);
+        if (choice == 1) {
+            system.menu();
+        } else if (choice == 2) {
+            System.exit(0);
+        }
     }
 
     public void displayAsAdmin() {
-        System.out.println("\n1 - Edit Teacher in Database");
-        System.out.println("2 - Remove Teacher");
-        System.out.println("3 - Add Teacher");
-        System.out.println("4 - Access Teachers User Menu");
-        System.out.println("5 - Go Back");
-
         sentinel = true;
         while (sentinel) {
+            System.out.println("\n1 - Edit Teacher in Database");
+            System.out.println("2 - Remove Teacher");
+            System.out.println("3 - Add Teacher");
+            System.out.println("4 - Access Teachers User Menu");
+            System.out.println("5 - Go Back");
+
             int userChoice = SchoolSystem.choice(1, 5);
             switch (userChoice) {
                 case 1 -> {
@@ -169,24 +173,25 @@ public class TeachersDB implements TPDI, TInfo {
                 System.out.println("Enter the following details for ID: " + idNum);
 
                 name();
-                info.get(idNum).add(this.name);
+                teachersData.info.get(idNum).add(this.name);
 
                 dob();
-                info.get(idNum).add(this.dob);
+                teachersData.info.get(idNum).add(this.dob);
 
                 contactDetails();
-                info.get(idNum).add(this.contact);
+                teachersData.info.get(idNum).add(this.contact);
 
                 gender();
-                info.get(idNum).add(this.gender);
+                teachersData.info.get(idNum).add(this.gender);
 
                 assignedSubject();
-                info.get(idNum).add(this.subject);
+                teachersData.info.get(idNum).add(this.subject);
 
                 timeSchedule();
-                info.get(idNum).add(this.schedule);
+                teachersData.info.get(idNum).add(this.schedule);
 
                 System.out.println("Teacher Added Successfully.");
+                teachersData.saveToFile("Teachersdatabase.txt");
                 break;
 
             } else if (userChoice == 2) {
@@ -200,9 +205,10 @@ public class TeachersDB implements TPDI, TInfo {
         System.out.print("Enter Teacher ID to remove: ");
         String rem = s.nextLine();
 
-        if (info.containsKey(rem)) {
-            info.remove(rem);
+        if (teachersData.info.containsKey(rem)) {
+            teachersData.info.remove(rem);
             System.out.println("Teacher removed.");
+            teachersData.saveToFile("Teachersdatabase.txt");
         } else {
             System.out.println("Teacher ID not found.");
         }
@@ -224,45 +230,52 @@ public class TeachersDB implements TPDI, TInfo {
         System.out.print("Enter Teacher ID to edit: ");
         String id = s.nextLine();
 
-        if (!info.containsKey(id)) {
+        if (!teachersData.info.containsKey(id)) {
             System.out.println("Teacher ID not found.");
             return;
         }
-        ArrayList<String> t = info.get(id);
+        ArrayList<String> t = teachersData.info.get(id);
 
         System.out.println("1 - Change Name");
-        System.out.println("2 - Change Contact");
-        System.out.println("3 - Change Gender");
-        System.out.println("4 - Change Subject");
-        System.out.println("5 - Change Schedule");
-        System.out.println("6 - Back");
+        System.out.println("2 - Change DOB");
+        System.out.println("3 - Change Contact");
+        System.out.println("4 - Change Gender");
+        System.out.println("5 - Change Subject");
+        System.out.println("6 - Change Schedule");
+        System.out.println("7 - Back");
 
-        int c = SchoolSystem.choice(1, 6);
-
+        int c = SchoolSystem.choice(1, 7);
         switch (c) {
             case 1 -> {
                 name();
                 t.set(0, name);
             }
             case 2 -> {
+                dob();
+                t.set(1, dob);
+            }
+            case 3 -> {
                 contactDetails();
                 t.set(2, contact);
             }
-            case 3 -> {
+            case 4 -> {
                 gender();
                 t.set(3, gender);
             }
-            case 4 -> {
+            case 5 -> {
                 assignedSubject();
                 t.set(4, subject);
             }
-            case 5 -> {
+            case 6 -> {
                 timeSchedule();
                 t.set(5, schedule);
             }
+            case 7 ->
+                displayAsAdmin();
         }
 
         System.out.println("Teacher Updated.");
+        teachersData.saveToFile("Teachersdatabase.txt");
 
         System.out.println("Press 1 to quit\nPress 2 to go back");
         int choice = SchoolSystem.choice(1, 2);

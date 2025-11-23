@@ -30,7 +30,7 @@ public class SchoolSystem {
     private void changeCredential() {
         sentinel = true;
         while (sentinel) {
-            System.out.print("Enter current credential: ");
+            System.out.print("Enter current credential or B to return to the admin menu: ");
             String input = s.nextLine();
             if (input.equals(admin)) {
                 sentinel = true;
@@ -46,6 +46,8 @@ public class SchoolSystem {
                         sentinel = false;
                     }
                 }
+            } else if (input.equalsIgnoreCase("b")) {
+                choicesMenu(this.admin);
             } else {
                 System.out.println("Incorrect credential");
             }
@@ -54,7 +56,13 @@ public class SchoolSystem {
 
     public void choicesMenu(String user) {
         if (user.equalsIgnoreCase("user")) {
-            System.out.println("1 - Access student database\n2 - View available uniforms\n3 - View available classrooms\n4 - Access teacher database\n5 - View subjects available\n6 - Exit");
+            System.out.println("""
+                               1 - Access student database
+                               2 - View available uniforms
+                               3 - View available classrooms
+                               4 - Access teacher database
+                               5 - View subjects available
+                               6 - Exit""");
             int choice = choice(1, 6);
             switch (choice) {
                 case 1 ->
@@ -71,7 +79,14 @@ public class SchoolSystem {
                     System.exit(0);
             }
         } else if (user.equals(admin)) {
-            System.out.println("1 - Edit student database\n2 - Edit available uniforms\n3 - Book available classrooms\n4 - Edit teacher database\n5 - Edit subjects available\n6 - Edit admin information\n7 - Exit");
+            System.out.println("""
+                               1 - Edit student database
+                               2 - Edit available uniforms
+                               3 - Book available classrooms
+                               4 - Edit teacher database
+                               5 - Edit subjects available
+                               6 - Edit admin information
+                               7 - Exit""");
             int choice = choice(1, 7);
             switch (choice) {
                 case 1 ->
@@ -108,6 +123,8 @@ public class SchoolSystem {
     }
 
     public static void main(String[] args) {
+        system.students.studentData.loadFromFile("Studentdatabase.txt");
+        //Another one for the teacehrs perhaps?
         system.menu();
     }
 

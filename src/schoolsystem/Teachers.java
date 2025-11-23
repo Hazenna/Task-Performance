@@ -9,28 +9,34 @@ public class Teachers {
     private final String adminUser = "Admin";
     private final String adminPass = "1234";
 
-    private final Map<String, Integer> grades = new HashMap<>();
+    Map<String, Integer> grades = new HashMap<>();
     private final List<String> handouts = new ArrayList<>();
+    private TeachersDB teachers = new TeachersDB();
     private String schedule = "No schedule assigned.";
     private String subject = "No subject assigned.";
+    private boolean sentinel;
 
     public void login() {
-        System.out.println("Teacher Login");
-        System.out.print("Enter Teacher Credentials (User/Admin): ");
-        String input = s.nextLine().trim();
+        sentinel = true;
+        while (sentinel) {
+            System.out.println("Teacher Login");
+            System.out.print("Enter Teacher Credentials (User/Admin): ");
+            String input = s.nextLine().trim();
 
-        if (input.equalsIgnoreCase("User")) {
-            teacherUserMenu();
-        } else if (input.equalsIgnoreCase(adminUser)) {
-            System.out.print("Enter Password: ");
-            String pass = s.nextLine();
-            if (pass.equals(adminPass)) {
-                teacherAdminMenu();
+            if (input.equalsIgnoreCase("User")) {
+                teacherUserMenu();
+            } else if (input.equalsIgnoreCase(adminUser)) {
+                System.out.print("Enter Password: ");
+                String pass = s.nextLine().trim();
+                if (pass.equals(adminPass)) {
+                    teacherAdminMenu();
+                    sentinel = false;
+                } else {
+                    System.out.println("Incorrect Password, try again.");
+                }
             } else {
-                System.out.println("Incorrect Password.");
+                System.out.println("Unknown Credential, try again.");
             }
-        } else {
-            System.out.println("Unknown Credential");
         }
     }
 
@@ -52,6 +58,8 @@ public class Teachers {
                 viewSchedule();
             case 4 ->
                 viewSubject();
+            case 5 ->
+                teachers.displayAsAdmin();
         }
     }
 
@@ -76,6 +84,8 @@ public class Teachers {
                 setSchedule();
             case 5 ->
                 setSubject();
+            case 6 ->
+                teachers.displayAsAdmin();
         }
     }
 
@@ -127,29 +137,41 @@ public class Teachers {
     private void writeGrades() {
         System.out.print("Enter Student Name: ");
         String name = s.nextLine();
-        System.out.print("Enter Grade: ");
-        int g = Integer.parseInt(s.nextLine());
-        grades.put(name, g);
-        System.out.println("Grade saved.");
+        System.out.print("Enter Grade(0 - 100): ");
+        try {
+            int g = Integer.parseInt(s.nextLine().trim());
+            if (g >= 0 && g <= 100) {
+                grades.put(name, g);
+                System.out.println("Grade saved.");
+            } else {
+                System.out.println("Grade must be between 0 and 100.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid grade input.");
+        }
     }
 
     private void writeHandouts() {
         System.out.print("Enter Handout Title: ");
-        String h = s.nextLine();
+        String h = s.nextLine().trim();
         handouts.add(h);
         System.out.println("Handout Added.");
     }
 
     private void computeGrade() {
-        System.out.print("Enter Prelim: ");
-        double p = Double.parseDouble(s.nextLine());
-        System.out.print("Enter Midterm: ");
-        double m = Double.parseDouble(s.nextLine());
-        System.out.print("Enter Finals: ");
-        double f = Double.parseDouble(s.nextLine());
+        try {
+            System.out.print("Enter Prelim: ");
+            double p = Double.parseDouble(s.nextLine());
+            System.out.print("Enter Midterm: ");
+            double m = Double.parseDouble(s.nextLine());
+            System.out.print("Enter Finals: ");
+            double f = Double.parseDouble(s.nextLine());
 
-        double finalGrade = (p + m + f) / 3;
-        System.out.println("Computed Final Grade: " + finalGrade);
+            double finalGrade = (p + m + f) / 3;
+            System.out.println("Computed Final Grade: " + finalGrade);
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input, use numbers only.");
+        }
     }
 
     private void setSchedule() {
