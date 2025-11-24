@@ -123,8 +123,8 @@ public class SchoolSystem {
     }
 
     public static void main(String[] args) {
-        system.students.studentData.loadFromFile("Studentdatabase.txt");
-        //Another one for the teacehrs perhaps?
+        system.students.studentData.loadFromFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt"); //Do not mind this
+        SchoolSystem.tdb.teachersData.loadFromFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Teachersdatabase.txt"); //This as well
         system.menu();
     }
 

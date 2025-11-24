@@ -124,6 +124,12 @@ public class StudentsDB implements PDI, APD, ASF {
     }
 
     public void displayAsUser() {
+        try {
+            studentData.loadFromFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt");
+        } catch (Exception e) {
+            System.out.println("Error loading database: " + e.getMessage());
+        }
+        
         System.out.println("Students in database:");
         if (studentData.info.isEmpty()) {
             System.out.println("No students found.");
@@ -197,8 +203,12 @@ public class StudentsDB implements PDI, APD, ASF {
         courseInformation();
         studentData.info.get(this.idString).add(this.course);
 
-        System.out.println("Student added successfully!");
-        studentData.saveToFile("Studentdatabase.txt");
+        try {
+            System.out.println("Student added successfully!");
+            studentData.saveToFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt");
+        } catch (Exception e) {
+            System.out.println("Error saving to file: " + e.getMessage());
+        }
 
         System.out.println("Press 1 to quit\nPress 2 to go back");
         int choice = SchoolSystem.choice(1, 2);
@@ -318,9 +328,13 @@ public class StudentsDB implements PDI, APD, ASF {
             }
         }
 
-        System.out.println("Student details updated successfully!");
-        studentData.saveToFile("Studentdatabase.txt");
-        System.out.println("Updated details: " + details);
+        try {
+            System.out.println("Student details updated successfully!");
+            studentData.saveToFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt");
+            System.out.println("Updated details: " + details);
+        } catch (Exception e) {
+            System.out.println("Error updating to file: " + e.getMessage());
+        }
 
         System.out.println("Press 1 to quit\nPress 2 to go back");
         int choice = SchoolSystem.choice(1, 2);
@@ -389,8 +403,12 @@ public class StudentsDB implements PDI, APD, ASF {
             String choice = s.nextLine().trim();
             if (choice.equalsIgnoreCase("y")) {
                 studentData.info.remove(selectedKey);
-                System.out.println("Student removed successfully");
-                studentData.saveToFile("Studentdatabase.txt");
+                try {
+                    System.out.println("Student removed successfully");
+                    studentData.saveToFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt");
+                } catch (Exception e) {
+                    System.out.println("Error removeing from file: " + e.getMessage());
+                }
                 sentinel = false;
             } else if (choice.equalsIgnoreCase("n")) {
                 System.out.println("Removal Canvelled");

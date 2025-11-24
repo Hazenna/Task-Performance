@@ -9,9 +9,9 @@ public class Teachers {
     private final String adminUser = "Admin";
     private final String adminPass = "1234";
 
-    Map<String, Integer> grades = new HashMap<>();
+    SchoolSystem system = new SchoolSystem();
+    public Map<String, Integer> grades = new HashMap<>();
     private final List<String> handouts = new ArrayList<>();
-    private TeachersDB teachers = new TeachersDB();
     private String schedule = "No schedule assigned.";
     private String subject = "No subject assigned.";
     private boolean sentinel;
@@ -48,7 +48,7 @@ public class Teachers {
         System.out.println("4 - View Assigned Subject");
         System.out.println("5 - Exit");
 
-        int c = choice(1, 5);
+        int c = system.choice(1, 5);
         switch (c) {
             case 1 ->
                 viewGrades();
@@ -59,7 +59,7 @@ public class Teachers {
             case 4 ->
                 viewSubject();
             case 5 ->
-                teachers.displayAsAdmin();
+                SchoolSystem.tdb.displayAsAdmin();
         }
     }
 
@@ -72,7 +72,7 @@ public class Teachers {
         System.out.println("5 - Set Assigned Subject");
         System.out.println("6 - Exit");
 
-        int c = choice(1, 6);
+        int c = system.choice(1, 6);
         switch (c) {
             case 1 ->
                 writeGrades();
@@ -85,22 +85,7 @@ public class Teachers {
             case 5 ->
                 setSubject();
             case 6 ->
-                teachers.displayAsAdmin();
-        }
-    }
-
-    private int choice(int min, int max) {
-        while (true) {
-            System.out.print("> ");
-            String line = s.nextLine();
-            try {
-                int c = Integer.parseInt(line);
-                if (c >= min && c <= max) {
-                    return c;
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Enter a valid number.");
-            }
+                SchoolSystem.tdb.displayAsAdmin();
         }
     }
 

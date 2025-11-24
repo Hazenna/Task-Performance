@@ -149,12 +149,12 @@ public class TeachersDB implements TPDI, TInfo {
                     sentinel = false;
                 }
                 case 4 -> {
-                    menu.login();
+                    SchoolSystem.teacher.login();
                     sentinel = false;
                 }
                 case 5 -> {
-                    system.menu();
                     sentinel = false;
+                    system.menu();
                 }
             }
         }

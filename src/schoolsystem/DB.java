@@ -21,7 +21,6 @@ public class DB {
                 ArrayList<String> details = info.get(key);
                 w.println(key + "," + String.join(",", details));
             }
-            System.out.println("Data saved to " + fileName);
         } catch (IOException e) {
             System.out.println("Error saving data: " + e.getMessage());
         }
@@ -42,9 +41,8 @@ public class DB {
                     info.put(key, details);
                 }
             }
-            System.out.println("Data loaded from " + fileName);
         } catch (IOException e) {
-            System.out.println("Error loading data (file may not exist): " + e.getMessage());
+            System.out.println("Error loading data: " + e.getMessage());
         }
     }
 }
