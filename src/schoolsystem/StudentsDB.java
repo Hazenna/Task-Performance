@@ -241,7 +241,7 @@ public class StudentsDB implements PDI, APD, ASF {
         }
 
         if (matchedKeys.isEmpty()) {
-            System.out.println("No student found in database with the name " + searchName);
+            System.out.println("No student found in database with the name " + searchName + ".");
             editStudent();
             return;
         }
@@ -272,60 +272,43 @@ public class StudentsDB implements PDI, APD, ASF {
         System.out.println("Gender: " + details.get(3));
         System.out.println("GPA: " + details.get(4));
         System.out.println("Course: " + details.get(5));
+        
+        System.out.println("1 - Update Name");
+        System.out.println("2 - Update DOB");
+        System.out.println("3 - Update Contact");
+        System.out.println("4 - Update Gender");
+        System.out.println("5 - Update GPA");
+        System.out.println("6 - Update Course");
+        System.out.println("7 - Back");
 
-        System.out.println("Enter the new values (leave blank to keep current values):");
-
-        System.out.print("New name: ");
-        String newName = s.nextLine().trim();
-        if (!newName.isEmpty()) {
-            details.set(0, newName);
-        }
-
-        System.out.print("New DOB (MM/DD/YYYY): ");
-        String newDob = s.nextLine().trim();
-        if (!newDob.isEmpty()) {
-            if (newDob.matches("\\d{2}/\\d{2}/\\d{4}")) {
-                details.set(1, newDob);
-            } else {
-                System.out.println("Invalid DOB format. Keeping current.");
+        int c = SchoolSystem.choice(1, 7);
+        switch (c) {
+            case 1 -> {
+                name();
+                details.set(0, name);
             }
-        }
-
-        System.out.print("New Contact: ");
-        String newContact = s.nextLine().trim();
-        if (!newContact.isEmpty()) {
-            details.set(2, newContact);
-        }
-
-        System.out.print("New Gender: ");
-        String newGender = s.nextLine().trim();
-        if (!newGender.isEmpty()) {
-            details.set(3, newGender);
-        }
-
-        System.out.print("New GPA: "); //Not final, will need collaboration with the teachers section
-        String newGpa = s.nextLine().trim();
-        if (!newGpa.isEmpty()) {
-            try {
-                double gpa = Double.parseDouble(newGpa);
-                if (gpa >= 0.0 && gpa <= 4.0) {
-                    details.set(4, String.valueOf(gpa));
-                } else {
-                    System.out.println("Invalid GPA. Keeping current.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid GPA input. Keeping current.");
+            case 2 -> {
+                dob();
+                details.set(1, dob);
             }
-        }
-
-        System.out.print("New Course: ");
-        String newCourse = s.nextLine().trim();
-        if (!newCourse.isEmpty()) {
-            if (newCourse.equalsIgnoreCase("NA") || newCourse.equalsIgnoreCase("")) {
-                details.set(5, "Undecided");
-            } else {
-                details.set(5, newCourse);
+            case 3 -> {
+                contactDetails();
+                details.set(2, contact);
             }
+            case 4 -> {
+                gender();
+                details.set(3, gender);
+            }
+            case 5 -> {
+                GPA();
+                details.set(4, getGPA);
+            }
+            case 6 -> {
+                courseInformation();
+                details.set(5, course);
+            }
+            case 7 ->
+                displayAsAdmin();
         }
 
         try {

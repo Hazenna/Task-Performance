@@ -101,21 +101,25 @@ public class TeachersDB implements TPDI, TInfo {
     }
 
     public void displayAsUser() {
+        try {
+            teachersData.loadFromFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Teachersdatabase.txt");
+        } catch (Exception e) {
+            System.out.println("Error loading database: " + e.getMessage());
+        }
+
         System.out.println("\nTeachers in Database:");
         if (teachersData.info.isEmpty()) {
             System.out.println("No teachers available.");
             return;
         }
 
-        teachersData.info.forEach((id, list) -> {
-            System.out.println("\nTeacher ID: " + id);
-            System.out.println("Name: " + list.get(0));
-            System.out.println("DOB: " + list.get(1));
-            System.out.println("Contact: " + list.get(2));
-            System.out.println("Gender: " + list.get(3));
-            System.out.println("Subject: " + list.get(4));
-            System.out.println("Schedule: " + list.get(5));
-        });
+        for (String key : teachersData.info.keySet()) {
+            ArrayList<String> details = teachersData.info.get(key);
+            System.out.println("ID: " + key + " | Name: " + details.get(0) + " | DOB: "
+                    + details.get(1) + " | Contact: " + details.get(2) + " | Gender: " + details.get(3)
+                    + " | GPA: " + details.get(4) + " | Course: " + details.get(5));
+        }
+
         System.out.println("1 - Back\n2 - Exit");
         int choice = SchoolSystem.choice(1, 2);
         if (choice == 1) {
@@ -191,8 +195,19 @@ public class TeachersDB implements TPDI, TInfo {
                 teachersData.info.get(idNum).add(this.schedule);
 
                 System.out.println("Teacher Added Successfully.");
-                teachersData.saveToFile("Teachersdatabase.txt");
-                break;
+                teachersData.saveToFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Teachersdatabase.txt");
+
+                System.out.println("Press 1 to quit\nPress 2 to go back");
+                int choice = SchoolSystem.choice(1, 2);
+
+                switch (choice) {
+                    case 1 -> {
+                        System.exit(0);
+                    }
+                    case 2 -> {
+                        displayAsAdmin();
+                    }
+                }
 
             } else if (userChoice == 2) {
                 displayAsAdmin();
@@ -208,7 +223,7 @@ public class TeachersDB implements TPDI, TInfo {
         if (teachersData.info.containsKey(rem)) {
             teachersData.info.remove(rem);
             System.out.println("Teacher removed.");
-            teachersData.saveToFile("Teachersdatabase.txt");
+            teachersData.saveToFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Teachersdatabase.txt");
         } else {
             System.out.println("Teacher ID not found.");
         }
@@ -227,14 +242,52 @@ public class TeachersDB implements TPDI, TInfo {
     }
 
     private void editTeacher() {
-        System.out.print("Enter Teacher ID to edit: ");
-        String id = s.nextLine();
+        System.out.print("Enter Teacher name to edit or type B to go back: ");
+        String teacherName = s.nextLine().trim();
 
-        if (!teachersData.info.containsKey(id)) {
-            System.out.println("Teacher ID not found.");
-            return;
+        List<String> matchedKeys = new ArrayList<>();
+        for (String key : teachersData.info.keySet()) {
+            ArrayList<String> details = teachersData.info.get(key);
+            if (!details.isEmpty() && details.get(0).equalsIgnoreCase(teacherName)) {
+                matchedKeys.add(key);
+            }
         }
-        ArrayList<String> t = teachersData.info.get(id);
+
+        if (matchedKeys.isEmpty()) {
+            System.out.println("No teacher found in the database with the name " + teacherName + ".");
+            editTeacher();
+            return;
+        } else if (teacherName.equalsIgnoreCase("b")) {
+            displayAsAdmin();
+        }
+        
+        String selectedKey;
+        if (matchedKeys.size() == 1) {
+            selectedKey = matchedKeys.get(0);
+        } else {
+            System.out.println("Multiple teachers found with that name:");
+            for (String key : matchedKeys) {
+                ArrayList<String> details = teachersData.info.get(key);
+                System.out.println("ID: " + key + " - " + details);
+            }
+            
+            System.out.print("Enter ID of teacher you want to change information: ");
+            selectedKey = s.nextLine().trim();
+            if (!matchedKeys.contains(selectedKey)) {
+                System.out.println("Invalid ID inputted");
+                return;
+            }
+        }
+        
+        ArrayList<String> t = teachersData.info.get(selectedKey);
+        
+        System.out.println("Current details for ID " + selectedKey + ":");
+        System.out.println("Name: " + t.get(0));
+        System.out.println("DOB: " + t.get(1));
+        System.out.println("Contact: " + t.get(2));
+        System.out.println("Gender: " + t.get(3));
+        System.out.println("GPA: " + t.get(4));
+        System.out.println("Course: " + t.get(5));
 
         System.out.println("1 - Change Name");
         System.out.println("2 - Change DOB");
@@ -275,7 +328,7 @@ public class TeachersDB implements TPDI, TInfo {
         }
 
         System.out.println("Teacher Updated.");
-        teachersData.saveToFile("Teachersdatabase.txt");
+        teachersData.saveToFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Teachersdatabase.txt");
 
         System.out.println("Press 1 to quit\nPress 2 to go back");
         int choice = SchoolSystem.choice(1, 2);

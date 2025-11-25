@@ -14,6 +14,7 @@ import java.io.*;
 public class DB {
 
     Map<String, ArrayList<String>> info = new HashMap<>();
+    public int idCounter = 1;
 
     public void saveToFile(String fileName) {
         try (PrintWriter w = new PrintWriter(new FileWriter(fileName))) {
@@ -31,18 +32,31 @@ public class DB {
         try (BufferedReader r = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = r.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length >= 7) {
-                    String key = parts[0];
-                    ArrayList<String> details = new ArrayList<>();
-                    for (int i = 1; i < parts.length; i++) {
-                        details.add(parts[i]);
+                if (line.startsWith("COUNTER,")) {
+                    String[] parts = line.split(",");
+                    if (parts.length > 1) {
+                        try {
+                            idCounter = Integer.parseInt(parts[1]);
+                        } catch (NumberFormatException e) {
+                            System.out.println("Error loading counter, reseting to 1.");
+                            idCounter = 1;
+                        }
                     }
-                    info.put(key, details);
+                } else {
+                    String[] parts = line.split(",");
+                    if (parts.length >= 7) {
+                        String key = parts[0];
+                        ArrayList<String> details = new ArrayList<>();
+                        for (int i = 1; i < parts.length; i++) {
+                            details.add(parts[i]);
+                        }
+                        info.put(key, details);
+                    }
                 }
             }
         } catch (IOException e) {
             System.out.println("Error loading data: " + e.getMessage());
+            idCounter = 1;
         }
     }
 }
