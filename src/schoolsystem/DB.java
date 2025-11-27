@@ -44,7 +44,7 @@ public class DB {
                     }
                 } else {
                     String[] parts = line.split(",");
-                    if (parts.length >= 7) {
+                    if (parts.length >= 8) {
                         String key = parts[0];
                         ArrayList<String> details = new ArrayList<>();
                         for (int i = 1; i < parts.length; i++) {

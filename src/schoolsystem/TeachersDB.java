@@ -38,6 +38,7 @@ public class TeachersDB implements TPDI, TInfo {
     private String gender;
     private String subject = "None";
     private String schedule = "Not Assigned";
+    private String password;
 
     @Override
     public void teacherID() {
@@ -98,6 +99,15 @@ public class TeachersDB implements TPDI, TInfo {
     public void timeSchedule() {
         System.out.print("Enter Teacher Time Schedule: ");
         this.schedule = s.nextLine().trim();
+    }
+    
+    public void setPassword() {
+        System.out.print("Set credentials for this teacher: ");
+        this.password = s.nextLine().trim();
+        if (this.password.isEmpty()) {
+            System.out.println("Credential cannot be empty. setting password to password");
+            this.password = "password";
+        }
     }
 
     public void displayAsUser() {
@@ -193,6 +203,8 @@ public class TeachersDB implements TPDI, TInfo {
 
                 timeSchedule();
                 teachersData.info.get(idNum).add(this.schedule);
+                
+                setPassword();
 
                 System.out.println("Teacher Added Successfully.");
                 teachersData.saveToFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Teachersdatabase.txt");
@@ -295,9 +307,10 @@ public class TeachersDB implements TPDI, TInfo {
         System.out.println("4 - Change Gender");
         System.out.println("5 - Change Subject");
         System.out.println("6 - Change Schedule");
-        System.out.println("7 - Back");
+        System.out.println("7 - Change credential");
+        System.out.println("8 - Back");
 
-        int c = SchoolSystem.choice(1, 7);
+        int c = SchoolSystem.choice(1, 8);
         switch (c) {
             case 1 -> {
                 name();
@@ -323,8 +336,14 @@ public class TeachersDB implements TPDI, TInfo {
                 timeSchedule();
                 t.set(5, schedule);
             }
-            case 7 ->
+            case 7 -> {
+                setPassword();
+                t.set(6, password);
+            }
+            case 8 -> {
                 displayAsAdmin();
+                return;
+            }
         }
 
         System.out.println("Teacher Updated.");

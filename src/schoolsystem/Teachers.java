@@ -20,22 +20,41 @@ public class Teachers {
         sentinel = true;
         while (sentinel) {
             System.out.println("Teacher Login");
-            System.out.print("Enter Teacher Credentials (User/Admin): ");
+            System.out.print("Enter teacher name: ");
             String input = s.nextLine().trim();
 
-            if (input.equalsIgnoreCase("User")) {
-                teacherUserMenu();
-            } else if (input.equalsIgnoreCase(adminUser)) {
-                System.out.print("Enter Password: ");
-                String pass = s.nextLine().trim();
-                if (pass.equals(adminPass)) {
-                    teacherAdminMenu();
-                    sentinel = false;
-                } else {
-                    System.out.println("Incorrect Password, try again.");
+            if (input.isEmpty()) {
+                System.out.println("Name cannot be empty. Try again");
+                continue;
+            }
+
+            boolean found = false;
+            String teacherID = null;
+            String storedCredential = null;
+
+            for (Map.Entry<String, ArrayList<String>> entry : SchoolSystem.tdb.teachersData.info.entrySet()) {
+                ArrayList<String> details = entry.getValue();
+                if (details.size() > 0 && details.get(0).equals(input)) {
+                    found = true;
+                    teacherID = entry.getKey();
+                    storedCredential = details.size() > 6 ? details.get(6) : null;
+                    break;
                 }
+            }
+
+            if (found) {
+                System.out.println("Teacher not found in database. Access denied");
+                continue;
+            }
+
+            System.out.println("Enter credentials: ");
+            String cred = s.nextLine().trim();
+            if (storedCredential != null && cred.equals(storedCredential)) {
+                System.out.println("Login successful, welcome " + input);
+                teacherUserMenu();
+                sentinel = false;
             } else {
-                System.out.println("Unknown Credential, try again.");
+                System.out.println("Incorrect password, please try again");
             }
         }
     }
