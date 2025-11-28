@@ -6,9 +6,6 @@ public class Teachers {
 
     private static final Scanner s = new Scanner(System.in);
 
-    private final String adminUser = "Admin";
-    private final String adminPass = "1234";
-
     SchoolSystem system = new SchoolSystem();
     public Map<String, Integer> grades = new HashMap<>();
     private final List<String> handouts = new ArrayList<>();
@@ -34,7 +31,7 @@ public class Teachers {
 
             for (Map.Entry<String, ArrayList<String>> entry : SchoolSystem.tdb.teachersData.info.entrySet()) {
                 ArrayList<String> details = entry.getValue();
-                if (details.size() > 0 && details.get(0).equals(input)) {
+                if (!details.isEmpty() && details.get(0).equals(input)) {
                     found = true;
                     teacherID = entry.getKey();
                     storedCredential = details.size() > 6 ? details.get(6) : null;
@@ -51,7 +48,15 @@ public class Teachers {
             String cred = s.nextLine().trim();
             if (storedCredential != null && cred.equals(storedCredential)) {
                 System.out.println("Login successful, welcome " + input);
-                teacherUserMenu();
+                System.out.println("1 - View regular menu\n2 - Admin menu");
+                int choice = SchoolSystem.choice(1, 2);
+                if (choice == 1) {
+                    teacherUserMenu();
+                    sentinel = false;
+                } else if (choice == 2) {
+                    teacherAdminMenu();
+                    sentinel = false;
+                }
                 sentinel = false;
             } else {
                 System.out.println("Incorrect password, please try again");
@@ -59,15 +64,16 @@ public class Teachers {
         }
     }
 
-    private void teacherUserMenu() {
+    public void teacherUserMenu() {
         System.out.println("\n--- Teacher User Menu ---");
         System.out.println("1 - View Grades");
         System.out.println("2 - View Handouts / Modules");
         System.out.println("3 - View Teacher Time Schedule");
         System.out.println("4 - View Assigned Subject");
-        System.out.println("5 - Exit");
+        System.out.println("5 - View Available rooms");
+        System.out.println("6 - Exit");
 
-        int c = system.choice(1, 5);
+        int c = SchoolSystem.choice(1, 6);
         switch (c) {
             case 1 ->
                 viewGrades();
@@ -78,20 +84,23 @@ public class Teachers {
             case 4 ->
                 viewSubject();
             case 5 ->
+                RoomsTp.menuView();
+            case 6 -> 
                 SchoolSystem.tdb.displayAsAdmin();
         }
     }
 
-    private void teacherAdminMenu() {
+    public void teacherAdminMenu() {
         System.out.println("\n--- Teacher Admin Menu ---");
         System.out.println("1 - Read/Write Grades");
         System.out.println("2 - Read/Write Handouts");
         System.out.println("3 - Compute Grade & Display");
         System.out.println("4 - Set Teacher Time Schedule");
         System.out.println("5 - Set Assigned Subject");
-        System.out.println("6 - Exit");
+        System.out.println("6 - Book Available Room");
+        System.out.println("7 - Exit");
 
-        int c = system.choice(1, 6);
+        int c = SchoolSystem.choice(1, 7);
         switch (c) {
             case 1 ->
                 writeGrades();
@@ -104,6 +113,8 @@ public class Teachers {
             case 5 ->
                 setSubject();
             case 6 ->
+                RoomsTp.menuBooking();
+            case 7 ->
                 SchoolSystem.tdb.displayAsAdmin();
         }
     }

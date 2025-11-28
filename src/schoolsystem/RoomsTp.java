@@ -4,7 +4,7 @@
  */
 package schoolsystem;
 
-import java.util.HashMap;
+import java.util.*;
 
 /**
  *
@@ -65,8 +65,11 @@ class School {
 
 public class RoomsTp {
 
-    public static void main(String[] args) {
-        School school = new School();
+    static Scanner s = new Scanner(System.in);
+    static Teachers t = new Teachers();
+    static School school = new School();
+
+    public static void menuView() {
 
         System.out.println("All Rooms:");
         for (Room r : school.getAllRooms().values()) {
@@ -79,5 +82,37 @@ public class RoomsTp {
                 System.out.println(r.getInfo());
             }
         }
+
+        boolean sentinel = true;
+
+        while (sentinel) {
+            System.out.print("Press B to go back or E to exit: ");
+            String back = s.nextLine().trim();
+
+            if (back.equalsIgnoreCase("b")) {
+                t.teacherUserMenu();
+                sentinel = false;
+            } else if (back.equalsIgnoreCase("e")) {
+                System.exit(0);
+            } else {
+                System.out.println("Unknown input");
+            }
+        }
+    }
+
+    public static void menuBooking() {
+
+        System.out.println("All Rooms:");
+        for (Room r : school.getAllRooms().values()) {
+            System.out.println(r.getInfo());
+        }
+
+        System.out.println("\nAvailable Rooms:");
+        for (Room r : school.getAllRooms().values()) {
+            if ("yes".equals(r.isAvailable())) {
+                System.out.println(r.getInfo());
+            }
+        }
+
     }
 }
