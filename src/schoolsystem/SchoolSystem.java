@@ -58,50 +58,41 @@ public class SchoolSystem {
         if (user.equalsIgnoreCase("user")) {
             System.out.println("""
                                1 - Access student database
-                               2 - View available uniforms
-                               3 - View available classrooms
-                               4 - Access teacher database
-                               5 - View subjects available
-                               6 - Exit""");
-            int choice = choice(1, 6);
+                               2 - View available classrooms
+                               3 - Access teacher database
+                               4 - View subjects available
+                               5 - Exit""");
+            int choice = choice(1, 5);
             switch (choice) {
                 case 1 ->
                     students.displayAsUser();
                 case 2 ->
-                    System.out.println("Feature not implemented yet.");
+                    RoomsTp.menuView();
                 case 3 ->
-                    System.out.println("Feature not implemented yet.");
-                case 4 ->
                     tdb.displayAsUser();
-                case 5 ->
+                case 4 ->
                     System.out.println("Feature not implemented yet.");
-                case 6 ->
+                case 5 ->
                     System.exit(0);
             }
         } else if (user.equals(admin)) {
             System.out.println("""
                                1 - Edit student database
-                               2 - Edit available uniforms
-                               3 - Book available classrooms
-                               4 - Edit teacher database
-                               5 - Edit subjects available
-                               6 - Edit admin information
-                               7 - Exit""");
-            int choice = choice(1, 7);
+                               2 - Edit teacher database
+                               3 - Edit subjects available
+                               4 - Edit admin information
+                               5 - Exit""");
+            int choice = choice(1, 5);
             switch (choice) {
                 case 1 ->
                     students.displayAsAdmin();
                 case 2 ->
-                    System.out.println("Feature not implemented yet.");
+                    tdb.displayAsAdmin();
                 case 3 ->
                     System.out.println("Feature not implemented yet.");
                 case 4 ->
-                    tdb.displayAsAdmin();
-                case 5 ->
-                    System.out.println("Feature not implemented yet.");
-                case 6 ->
                     changeCredential();
-                case 7 ->
+                case 5 ->
                     System.exit(0);
             }
         }
