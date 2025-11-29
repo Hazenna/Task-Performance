@@ -14,6 +14,7 @@ class Room {
 
     private int roomId;
     private String name;
+    private boolean booked = false;
 
     public Room(int roomId, String name) {
         this.roomId = roomId;
@@ -21,11 +22,11 @@ class Room {
     }
 
     public String getInfo() {
-        return "Room " + roomId + ": " + name;
+        return "Room " + roomId + ": " + name + " (" + (booked ? "Booked" : "Available") + ")";
     }
 
     public String isAvailable() {
-        return "yes";
+        return booked ? "no" : "yes";
     }
 
     public int getRoomId() {
@@ -34,6 +35,18 @@ class Room {
 
     public String getName() {
         return name;
+    }
+    
+    public boolean isBooked() {
+        return booked;
+    }
+    
+    public void book() {
+        booked = true;
+    }
+    
+    public void unbook() {
+        booked = false;
     }
 }
 
@@ -114,5 +127,46 @@ public class RoomsTp {
             }
         }
 
+        System.out.println("1 - Book room\n2 - Unbook room\n3 - Back");
+        int choice = SchoolSystem.choice(1, 3);
+        switch (choice) {
+            case 1 -> bookRoom();
+            case 2 -> unbookRoom();
+            case 3 -> SchoolSystem.teacher.teacherAdminMenu();
+        }
+    }
+    
+    private static void bookRoom() {
+        System.out.print("Enter room ID to book: ");
+        try {
+            int roomId = Integer.parseInt(s.nextLine().trim());
+            Room room = school.getRoom(roomId);
+            if (room != null && "yes".equals(room.isAvailable())) {
+                room.book();
+                System.out.println("Room " + roomId + " booked successfully.");
+            } else {
+                System.out.println("Room not available or invalid ID.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+        }
+        menuBooking();
+    }
+    
+    private static void unbookRoom() {
+        System.out.print("Enter room ID to unbook: ");
+        try {
+            int roomId = Integer.parseInt(s.nextLine().trim());
+            Room room = school.getRoom(roomId);
+            if (room != null && room.isBooked()) {
+                room.unbook();
+                System.out.println("Room " + roomId + " unbooked successfully.");
+            } else {
+                System.out.println("Room not booked or invalid ID.");
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input.");
+        }
+        menuBooking();
     }
 }
