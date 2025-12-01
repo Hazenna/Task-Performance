@@ -2,6 +2,10 @@ package schoolsystem;
 
 import java.util.*;
 
+/**
+ *
+ * @author James
+ */
 interface TPDI {
 
     void teacherID();
@@ -39,6 +43,16 @@ public class TeachersDB implements TPDI, TInfo {
     private String subject = "None";
     private String schedule = "Not Assigned";
     private String password;
+    
+    private List<String> findTeacherByName(String name) {
+        List<String> keys = new ArrayList<>();
+        for (Map.Entry<String, ArrayList<String>> entry : teachersData.info.entrySet()) {
+            if (entry.getValue().get(0).equalsIgnoreCase(name)) {
+                keys.add(entry.getKey());
+            }
+        }
+        return keys;
+    }
 
     @Override
     public void teacherID() {
@@ -54,15 +68,18 @@ public class TeachersDB implements TPDI, TInfo {
 
     @Override
     public void dob() {
-        System.out.print("Enter Date of Birth (MM/DD/YYYY): ");
-        sentinel = true;
         while (sentinel) {
-            String date = s.nextLine().trim();
-            if (date.matches("\\d{2}/\\d{2}/\\d{4}")) {
-                this.dob = date;
-                sentinel = false;
-            } else {
-                System.out.print("Invalid format. Use numbers only (MM/DD/YYYY): ");
+            System.out.print("Enter Date of Birth (MM/DD/YYYY): ");
+            String dateInput = s.nextLine().trim();
+            if (dateInput.matches("\\d{2}/\\d{2}/\\d{4}")) {
+                String[] parts = dateInput.split("/");
+                int month = Integer.parseInt(parts[0]);
+                if (month < 1 || month > 12) {
+                    this.dob = dateInput;
+                    sentinel = false;
+                } else {
+                    System.out.println("Enter the required date format.");
+                }
             }
         }
     }
@@ -100,7 +117,7 @@ public class TeachersDB implements TPDI, TInfo {
         System.out.print("Enter Teacher Time Schedule: ");
         this.schedule = s.nextLine().trim();
     }
-    
+
     public void setPassword() {
         System.out.print("Set credentials for this teacher: ");
         this.password = s.nextLine().trim();
@@ -120,14 +137,20 @@ public class TeachersDB implements TPDI, TInfo {
         System.out.println("\nTeachers in Database:");
         if (teachersData.info.isEmpty()) {
             System.out.println("No teachers available.");
-            return;
+            System.out.println("1 - Back\n2 - Exit");
+            int choice = SchoolSystem.choice(1, 2);
+            if (choice == 1) {
+                system.menu();
+            } else if (choice == 2) {
+                System.exit(0);
+            }
         }
 
         for (String key : teachersData.info.keySet()) {
             ArrayList<String> details = teachersData.info.get(key);
             System.out.println("ID: " + key + " | Name: " + details.get(0) + " | DOB: "
                     + details.get(1) + " | Contact: " + details.get(2) + " | Gender: " + details.get(3)
-                    + " | GPA: " + details.get(4) + " | Course: " + details.get(5));
+                    + " | Subject: " + details.get(4) + " | Schedule: " + details.get(5));
         }
 
         System.out.println("1 - Back\n2 - Exit");
@@ -203,8 +226,9 @@ public class TeachersDB implements TPDI, TInfo {
 
                 timeSchedule();
                 teachersData.info.get(idNum).add(this.schedule);
-                
+
                 setPassword();
+                teachersData.info.get(idNum).add(this.password);
 
                 System.out.println("Teacher Added Successfully.");
                 teachersData.saveToFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Teachersdatabase.txt");
@@ -254,16 +278,12 @@ public class TeachersDB implements TPDI, TInfo {
     }
 
     private void editTeacher() {
+        TeachersDB td = new TeachersDB();
+        
         System.out.print("Enter Teacher name to edit or type B to go back: ");
         String teacherName = s.nextLine().trim();
 
-        List<String> matchedKeys = new ArrayList<>();
-        for (String key : teachersData.info.keySet()) {
-            ArrayList<String> details = teachersData.info.get(key);
-            if (!details.isEmpty() && details.get(0).equalsIgnoreCase(teacherName)) {
-                matchedKeys.add(key);
-            }
-        }
+        List<String> matchedKeys = td.findTeacherByName(teacherName);
 
         if (matchedKeys.isEmpty()) {
             System.out.println("No teacher found in the database with the name " + teacherName + ".");
@@ -272,7 +292,7 @@ public class TeachersDB implements TPDI, TInfo {
         } else if (teacherName.equalsIgnoreCase("b")) {
             displayAsAdmin();
         }
-        
+
         String selectedKey;
         if (matchedKeys.size() == 1) {
             selectedKey = matchedKeys.get(0);
@@ -282,7 +302,7 @@ public class TeachersDB implements TPDI, TInfo {
                 ArrayList<String> details = teachersData.info.get(key);
                 System.out.println("ID: " + key + " - " + details);
             }
-            
+
             System.out.print("Enter ID of teacher you want to change information: ");
             selectedKey = s.nextLine().trim();
             if (!matchedKeys.contains(selectedKey)) {
@@ -290,9 +310,9 @@ public class TeachersDB implements TPDI, TInfo {
                 return;
             }
         }
-        
+
         ArrayList<String> t = teachersData.info.get(selectedKey);
-        
+
         System.out.println("Current details for ID " + selectedKey + ":");
         System.out.println("Name: " + t.get(0));
         System.out.println("DOB: " + t.get(1));

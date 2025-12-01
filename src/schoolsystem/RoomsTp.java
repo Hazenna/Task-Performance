@@ -36,15 +36,15 @@ class Room {
     public String getName() {
         return name;
     }
-    
+
     public boolean isBooked() {
         return booked;
     }
-    
+
     public void book() {
         booked = true;
     }
-    
+
     public void unbook() {
         booked = false;
     }
@@ -89,13 +89,6 @@ public class RoomsTp {
             System.out.println(r.getInfo());
         }
 
-        System.out.println("\nAvailable Rooms:");
-        for (Room r : school.getAllRooms().values()) {
-            if ("yes".equals(r.isAvailable())) {
-                System.out.println(r.getInfo());
-            }
-        }
-
         boolean sentinel = true;
 
         while (sentinel) {
@@ -130,12 +123,15 @@ public class RoomsTp {
         System.out.println("1 - Book room\n2 - Unbook room\n3 - Back");
         int choice = SchoolSystem.choice(1, 3);
         switch (choice) {
-            case 1 -> bookRoom();
-            case 2 -> unbookRoom();
-            case 3 -> SchoolSystem.teacher.teacherAdminMenu();
+            case 1 ->
+                bookRoom();
+            case 2 ->
+                unbookRoom();
+            case 3 ->
+                SchoolSystem.teacher.teacherAdminMenu();
         }
     }
-    
+
     private static void bookRoom() {
         System.out.print("Enter room ID to book: ");
         try {
@@ -152,7 +148,7 @@ public class RoomsTp {
         }
         menuBooking();
     }
-    
+
     private static void unbookRoom() {
         System.out.print("Enter room ID to unbook: ");
         try {

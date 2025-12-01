@@ -2,16 +2,20 @@ package schoolsystem;
 
 import java.util.*;
 
+/**
+ *
+ * @author Mika
+ */
 public class SchoolSystem {
 
     public StudentsDB students = new StudentsDB();
     static Scanner s = new Scanner(System.in);
-    private String admin = "Admin";
     public static SchoolSystem system = new SchoolSystem();
     public static Teachers teacher = new Teachers();
     public static TeachersDB tdb = new TeachersDB();
-    private boolean sentinel;
-
+    private static final String studentFile = "C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt";
+    private static final String teacherFile = "C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Teachersdatabase.txt";
+    
     static int choice(int min, int max) {
         while (true) {
             System.out.print("> ");
@@ -27,62 +31,35 @@ public class SchoolSystem {
         }
     }
 
-    private void changeCredential() {
-        sentinel = true;
-        while (sentinel) {
-            System.out.print("Enter current credential or B to return to the admin menu: ");
-            String input = s.nextLine();
-            if (input.equals(admin)) {
-                sentinel = true;
-                while (sentinel) {
-                    System.out.print("Enter new credential: ");
-                    String changeCred = s.nextLine();
-                    if (changeCred.equals(admin)) {
-                        System.out.println("That is already the current credential");
-                    } else {
-                        admin = changeCred;
-                        System.out.println("Credentials updated");
-                        choicesMenu(admin);
-                        sentinel = false;
-                    }
-                }
-            } else if (input.equalsIgnoreCase("b")) {
-                choicesMenu(this.admin);
-            } else {
-                System.out.println("Incorrect credential");
-            }
-        }
-    }
-
     public void choicesMenu(String user) {
         if (user.equalsIgnoreCase("user")) {
             System.out.println("""
                                1 - Access student database
-                               2 - View available classrooms
-                               3 - Access teacher database
-                               4 - View subjects available
+                               2 - Access teacher database
+                               3 - View subjects available
+                               4 - Back
                                5 - Exit""");
             int choice = choice(1, 5);
             switch (choice) {
                 case 1 ->
                     students.displayAsUser();
                 case 2 ->
-                    RoomsTp.menuView();
-                case 3 ->
                     tdb.displayAsUser();
-                case 4 ->
+                case 3 ->
                     System.out.println("Feature not implemented yet.");
+                case 4 ->
+                    menu();
                 case 5 ->
                     System.exit(0);
             }
-        } else if (user.equals(admin)) {
+        } else if (user.equalsIgnoreCase("Admin")) {
             System.out.println("""
                                1 - Edit student database
                                2 - Edit teacher database
                                3 - Edit subjects available
-                               4 - Edit admin information
+                               4 - Back
                                5 - Exit""");
-            int choice = choice(1, 5);
+            int choice = choice(1, 6);
             switch (choice) {
                 case 1 ->
                     students.displayAsAdmin();
@@ -91,7 +68,7 @@ public class SchoolSystem {
                 case 3 ->
                     System.out.println("Feature not implemented yet.");
                 case 4 ->
-                    changeCredential();
+                    menu();
                 case 5 ->
                     System.exit(0);
             }
@@ -105,8 +82,8 @@ public class SchoolSystem {
         if (cred.equalsIgnoreCase("User")) {
             String user = "user";
             choicesMenu(user);
-        } else if (cred.equals(this.admin)) {
-            choicesMenu(admin);
+        } else if (cred.equalsIgnoreCase("Admin")) {
+            choicesMenu("Admin");
         } else {
             System.out.println("Unknown credential");
             menu();
@@ -114,8 +91,8 @@ public class SchoolSystem {
     }
 
     public static void main(String[] args) {
-        system.students.studentData.loadFromFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt"); //Do not mind this
-        SchoolSystem.tdb.teachersData.loadFromFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Teachersdatabase.txt"); //This as well
+        system.students.studentData.loadFromFile(studentFile); //Do not mind this
+        SchoolSystem.tdb.teachersData.loadFromFile(teacherFile); //This as well
         system.menu();
     }
 

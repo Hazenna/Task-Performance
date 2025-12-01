@@ -9,7 +9,7 @@ import java.io.*;
 
 /**
  *
- * @author Hazenna
+ * @author Mika
  */
 public class DB {
 
@@ -18,6 +18,7 @@ public class DB {
 
     public void saveToFile(String fileName) {
         try (PrintWriter w = new PrintWriter(new FileWriter(fileName))) {
+            w.println("COUNTER," + idCounter);
             for (String key : info.keySet()) {
                 ArrayList<String> details = info.get(key);
                 w.println(key + "," + String.join(",", details));
@@ -44,18 +45,14 @@ public class DB {
                     }
                 } else {
                     String[] parts = line.split(",");
-                    if (parts.length >= 8) {
-                        String key = parts[0];
-                        ArrayList<String> details = new ArrayList<>();
-                        for (int i = 1; i < parts.length; i++) {
-                            details.add(parts[i]);
-                        }
-                        info.put(key, details);
-                    }
+                    String key = parts[0];
+                    ArrayList<String> details = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length));
+                    info.put(key, details);
+
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error loading data: " + e.getMessage());
+            System.err.println("Error loading data: " + e.getMessage());
             idCounter = 1;
         }
     }
