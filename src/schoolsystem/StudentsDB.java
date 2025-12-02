@@ -45,24 +45,13 @@ public class StudentsDB implements PDI, APD, ASF {
     private String gender;
     private String getGPA = "0.0";
     private String course;
-    private static int idCounter = 1;
+    private int idCounter = 1;
     private static Subjects manager = new Subjects();
-    private static StudentsDB st = new StudentsDB();
-    
-    private List<String> findStudentsByName(String name) {
-        List<String> keys = new ArrayList<>();
-        for (Map.Entry<String, ArrayList<String>> entry : studentData.info.entrySet()) {
-            if (entry.getValue().get(0).equalsIgnoreCase(name)) {
-                keys.add(entry.getKey());
-            }
-        }
-        return keys;
-    }
 
     @Override
     public void studentID() {
 
-        this.idString = String.valueOf(idCounter++);
+        this.idString = String.valueOf(studentData.idCounter++);
 
     }
 
@@ -83,11 +72,12 @@ public class StudentsDB implements PDI, APD, ASF {
                 if (dateInput.matches("\\d{2}/\\d{2}/\\d{4}")) {
                     String[] parts = dateInput.split("/");
                     int month = Integer.parseInt(parts[0]);
-                    if (month < 1 || month > 12) {
+                    if (month <= 1 || month <= 12) {
                         this.dob = dateInput;
-                        continue;
+                        sentinel = false;
                     } else {
                         System.out.println("Enter the required date format.");
+                        dob();
                     }
                 }
             }
@@ -140,6 +130,7 @@ public class StudentsDB implements PDI, APD, ASF {
 
     @Override
     public void courseInformation() {
+        sentinel = true;
         while (sentinel) {
             System.out.println("Available Courses:");
             manager.listAllCourses();
@@ -147,11 +138,13 @@ public class StudentsDB implements PDI, APD, ASF {
             String courseString = s.nextLine().trim();
             if (courseString.isEmpty() || courseString.equalsIgnoreCase("NA")) {
                 this.course = "Undecided";
+                sentinel = false;
             } else {
                 try {
                     int choice = Integer.parseInt(courseString);
                     if (choice >= 1 && choice <= manager.courses.size()) {
                         this.course = manager.courses.get(choice - 1).name;
+                        sentinel = false;
                     } else {
                         System.out.println("Invalid choice, please pick again");
                     }
@@ -164,7 +157,7 @@ public class StudentsDB implements PDI, APD, ASF {
 
     public void displayAsUser() {
         try {
-            studentData.loadFromFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt");
+            studentData.loadFromFile(SchoolSystem.studentFile);
         } catch (Exception e) {
             System.err.println("Error loading database: " + e.getMessage());
         }
@@ -244,7 +237,7 @@ public class StudentsDB implements PDI, APD, ASF {
 
         try {
             System.out.println("Student added successfully!");
-            studentData.saveToFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt");
+            studentData.saveToFile(SchoolSystem.studentFile);
         } catch (Exception e) {
             System.err.println("Error saving to file: " + e.getMessage());
         }
@@ -271,7 +264,13 @@ public class StudentsDB implements PDI, APD, ASF {
             return;
         }
 
-        List<String> matchedKeys = st.findStudentsByName(searchName);
+        List<String> matchedKeys = new ArrayList<>();
+        for (String key : studentData.info.keySet()) {
+            ArrayList<String> details = studentData.info.get(key);
+            if (!details.isEmpty() && details.get(0).equalsIgnoreCase(searchName)) {
+                matchedKeys.add(key);
+            }
+        }
 
         if (matchedKeys.isEmpty()) {
             System.out.println("No student found in database with the name " + searchName + ".");
@@ -303,18 +302,16 @@ public class StudentsDB implements PDI, APD, ASF {
         System.out.println("DOB: " + details.get(1));
         System.out.println("Contact: " + details.get(2));
         System.out.println("Gender: " + details.get(3));
-        System.out.println("GPA: " + details.get(4));
         System.out.println("Course: " + details.get(5));
 
         System.out.println("1 - Update Name");
         System.out.println("2 - Update DOB");
         System.out.println("3 - Update Contact");
         System.out.println("4 - Update Gender");
-        System.out.println("5 - Update GPA");
-        System.out.println("6 - Update Course");
-        System.out.println("7 - Back");
+        System.out.println("5 - Update Course");
+        System.out.println("6 - Back");
 
-        int c = SchoolSystem.choice(1, 7);
+        int c = SchoolSystem.choice(1, 6);
         switch (c) {
             case 1 -> {
                 name();
@@ -333,20 +330,16 @@ public class StudentsDB implements PDI, APD, ASF {
                 details.set(3, gender);
             }
             case 5 -> {
-                GWA();
-                details.set(4, getGPA);
-            }
-            case 6 -> {
                 courseInformation();
                 details.set(5, course);
             }
-            case 7 ->
+            case 6 ->
                 displayAsAdmin();
         }
 
         try {
             System.out.println("Student details updated successfully!");
-            studentData.saveToFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt");
+            studentData.saveToFile(SchoolSystem.studentFile);
             System.out.println("Updated details: " + details);
         } catch (Exception e) {
             System.err.println("Error updating to file: " + e.getMessage());
@@ -380,7 +373,13 @@ public class StudentsDB implements PDI, APD, ASF {
             return;
         }
 
-        List<String> matchedKeys = st.findStudentsByName(searchName);
+        List<String> matchedKeys = new ArrayList<>();
+        for (String key : studentData.info.keySet()) {
+            ArrayList<String> details = studentData.info.get(key);
+            if (!details.isEmpty() && details.get(0).equalsIgnoreCase(searchName)) {
+                matchedKeys.add(key);
+            }
+        }
 
         if (matchedKeys.isEmpty()) {
             System.out.println("No student found in database with the name " + searchName);
@@ -415,7 +414,7 @@ public class StudentsDB implements PDI, APD, ASF {
                 studentData.info.remove(selectedKey);
                 try {
                     System.out.println("Student removed successfully");
-                    studentData.saveToFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt");
+                    studentData.saveToFile(SchoolSystem.studentFile);
                 } catch (Exception e) {
                     System.err.println("Error removeing from file: " + e.getMessage());
                 }

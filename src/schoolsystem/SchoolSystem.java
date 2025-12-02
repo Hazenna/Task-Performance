@@ -13,8 +13,8 @@ public class SchoolSystem {
     public static SchoolSystem system = new SchoolSystem();
     public static Teachers teacher = new Teachers();
     public static TeachersDB tdb = new TeachersDB();
-    private static final String studentFile = "C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt";
-    private static final String teacherFile = "C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Teachersdatabase.txt";
+    public static final String studentFile = "Studentdatabase.txt";
+    public static final String teacherFile = "Teachersdatabase.txt";
     
     static int choice(int min, int max) {
         while (true) {
@@ -77,7 +77,8 @@ public class SchoolSystem {
 
     public void menu() {
         System.out.println("Welcome to School Management System");
-        System.out.print("Enter credentials or type User to log in as user: ");
+        System.out.println("Enter Admin to log in as Admin or User to log in as User: ");
+        System.out.print("> ");
         String cred = s.nextLine();
         if (cred.equalsIgnoreCase("User")) {
             String user = "user";

@@ -29,6 +29,16 @@ public class DB {
     }
 
     public void loadFromFile(String fileName) {
+        File file = new File(fileName);
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+                System.out.println("File Created");
+            } catch (IOException e) {
+                System.err.println("Error Creating file");
+                return;
+            }
+        }
         info.clear();
         try (BufferedReader r = new BufferedReader(new FileReader(fileName))) {
             String line;
@@ -44,11 +54,16 @@ public class DB {
                         }
                     }
                 } else {
+                    if (line.trim().isEmpty()) {
+                        continue;
+                    }
                     String[] parts = line.split(",");
+                    if (parts.length < 1) {
+                        continue;
+                    }
                     String key = parts[0];
                     ArrayList<String> details = new ArrayList<>(Arrays.asList(parts).subList(1, parts.length));
                     info.put(key, details);
-
                 }
             }
         } catch (IOException e) {

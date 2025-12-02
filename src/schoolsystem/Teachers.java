@@ -1,6 +1,7 @@
 package schoolsystem;
 
 import java.util.*;
+import static schoolsystem.StudentsDB.system;
 
 /**
  *
@@ -128,16 +129,37 @@ public class Teachers {
 
     private void viewGrades() {
         System.out.println("\n--- Student Grades ---");
-        if (grades.isEmpty()) {
-            System.out.println("No grades recorded.");
-        } else {
-            grades.forEach((name, studentGrades) -> {
-                if (studentGrades.length == 4) {
-                    System.out.println(name + " - Prelim: " + studentGrades[0] + ", Midterm: "
-                            + studentGrades[1] + ", Prefinals" + studentGrades[2] + ", Finals: " + studentGrades[3]);
+
+        SchoolSystem.system.students.studentData.loadFromFile(SchoolSystem.studentFile);
+        Map<String, ArrayList<String>> studentInfo = SchoolSystem.system.students.studentData.info;
+
+        for (String studentId : studentInfo.keySet()) {
+            ArrayList<String> details = studentInfo.get(studentId);
+            if (details == null || details.isEmpty()) {
+                continue;
+            }
+            String studentName = details.get(0);
+            double[] studentGrades = grades.get(studentName.toLowerCase());
+            if (studentGrades != null && studentGrades.length == 4) {
+                System.out.println(studentName + " - Prelims: " + studentGrades[0] + " | Midterms: " + studentGrades[1]
+                        + " | Prefinals: " + studentGrades[2] + " | Finals: " + studentGrades[3]);
+                System.out.println("1 - Back\n2 - Exit");
+                int choice = SchoolSystem.choice(1, 2);
+                if (choice == 1) {
+                    teacherUserMenu();
+                } else if (choice == 2) {
+                    System.exit(0);
+                }
+            } else {
+                System.out.println(studentName + " - Prelims: 0 | Midterms: 0 | Prefinals: 0 | Finals: 0");
+                System.out.println("1 - Back\n2 - Exit");
+                int choice = SchoolSystem.choice(1, 2);
+                if (choice == 1) {
+                    teacherUserMenu();
+                } else if (choice == 2) {
+                    System.exit(0);
                 }
             }
-            );
         }
     }
 
