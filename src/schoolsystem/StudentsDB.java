@@ -43,7 +43,7 @@ public class StudentsDB implements PDI, APD, ASF {
     private String dob;
     private String contact;
     private String gender;
-    private String getGPA = "0.0";
+    private String getGWA = "0.0";
     private String course;
     private static Subjects manager = new Subjects();
 
@@ -86,14 +86,16 @@ public class StudentsDB implements PDI, APD, ASF {
     @Override
     public void contactDetails() {
         sentinel = true;
-        System.out.print("Enter Contact Number: ");
+        System.out.print("Enter Philippine Contact Number: ");
         while (sentinel) {
             String contactString = s.nextLine().trim();
             if (contactString.isEmpty()) {
                 System.out.print("Number is Needed, Please Enter Contact Number: ");
-            } else {
+            } else if (contactString.matches("^\\d{11}$")) {
                 this.contact = contactString;
                 sentinel = false;
+            } else {
+                System.out.println("Enter contact number in 11 digits");
             }
         }
     }
@@ -107,6 +109,27 @@ public class StudentsDB implements PDI, APD, ASF {
         } else {
             this.gender = genderString;
         }
+    }
+
+    public double calculateGPA(double prelim, double midterm, double prefinals, double finals) {
+        return (prelim + midterm + prefinals + finals) / 4.0;
+    }
+
+    public double[] getGradesForStudent(String studentName) {
+        for (Map.Entry<String, ArrayList<String>> entry : studentData.info.entrySet()) {
+            ArrayList<String> details = entry.getValue();
+            if (details.size() >= 11 && details.get(1).equalsIgnoreCase(studentName)) {
+                try {
+                    double prelim = Double.parseDouble(details.get(7));
+                    double midterm = Double.parseDouble(details.get(8));
+                    double prefinals = Double.parseDouble(details.get(9));
+                    double finals = Double.parseDouble(details.get(10));
+                    return new double[]{prelim, midterm, prefinals, finals};
+                } catch (NumberFormatException | IndexOutOfBoundsException e) {
+                }
+            }
+        }
+        return new double[]{0, 0, 0, 0};  // Default for ungraded
     }
 
     @Override
@@ -124,7 +147,26 @@ public class StudentsDB implements PDI, APD, ASF {
 
             }
         }
-        this.getGPA = count > 0 ? String.format("%.2f", total / count) : "0.00";
+        this.getGWA = count > 0 ? String.format("%.2f", total / count) : "0.00";
+    }
+
+    public void updateGradesForStudent(String studentName, double prelim, double midterm, double prefinals, double finals) {
+        for (Map.Entry<String, ArrayList<String>> entry : studentData.info.entrySet()) {
+            ArrayList<String> details = entry.getValue();
+            if (details.size() >= 11 && details.get(1).equalsIgnoreCase(studentName)) {
+                details.set(7, String.valueOf(prelim));
+                details.set(8, String.valueOf(midterm));
+                details.set(9, String.valueOf(prefinals));
+                details.set(10, String.valueOf(finals));
+                // Recalculate GPA
+                double gpa = calculateGPA(prelim, midterm, prefinals, finals);
+                details.set(6, String.format("%.2f", gpa));
+                studentData.saveToFile("Studentdatabase.txt");
+                System.out.println("Grades updated for " + studentName);
+                return;
+            }
+        }
+        System.out.println("Student not found.");
     }
 
     @Override
@@ -167,9 +209,13 @@ public class StudentsDB implements PDI, APD, ASF {
         } else {
             for (String key : studentData.info.keySet()) {
                 ArrayList<String> details = studentData.info.get(key);
-                System.out.println("ID: " + key + " | Name: " + details.get(0) + " | DOB: "
-                        + details.get(1) + " | Contact: " + details.get(2) + " | Gender: " + details.get(3)
-                        + " | GPA: " + details.get(4) + " | Course: " + details.get(5));
+                if (details.size() >= 11) {
+                    double[] grades = {Double.parseDouble(details.get(7)), Double.parseDouble(details.get(8)),
+                        Double.parseDouble(details.get(9)), Double.parseDouble(details.get(10))};
+                    System.out.println("ID: " + key + " | Name: " + details.get(1) + " | ... | GPA: " + details.get(6)
+                            + " | Course: " + details.get(7) + " | Prelims: " + grades[0] + " | Midterms: " + grades[1]
+                            + " | Prefinals: " + grades[2] + " | Finals: " + grades[3]);
+                }
             }
         }
         System.out.println("1 - Back\n2 - Exit");
@@ -228,11 +274,22 @@ public class StudentsDB implements PDI, APD, ASF {
         gender();
         studentData.info.get(this.idString).add(this.gender);
 
-        GWA();
-        studentData.info.get(this.idString).add(this.getGPA);
+        studentData.info.get(this.idString).add(this.getGWA);
+
+        studentData.info.get(this.idString).add("0");
+
+        studentData.info.get(this.idString).add("0");
+
+        studentData.info.get(this.idString).add("0");
+
+        studentData.info.get(this.idString).add("0");
 
         courseInformation();
         studentData.info.get(this.idString).add(this.course);
+
+        double[] grades = getGradesForStudent(this.name);
+        double gpa = calculateGPA(grades[0], grades[1], grades[2], grades[3]);
+        studentData.info.get(this.idString).set(6, String.format("%.2f", gpa));
 
         try {
             System.out.println("Student added successfully!");

@@ -78,11 +78,13 @@ public class TeachersDB implements TPDI, TInfo {
         System.out.print("Enter Contact Number: ");
         while (sentinel) {
             String c = s.nextLine();
-            if (c.equals("")) {
+            if (c.isEmpty()) {
                 System.out.print("Contact Required. Enter Contact Number: ");
-            } else {
+            } if (c.matches("^\\d{11}$")){
                 this.contact = c;
                 sentinel = false;
+            } else {
+                System.out.println("Enter contact number in 11 digits");
             }
         }
     }
@@ -274,7 +276,11 @@ public class TeachersDB implements TPDI, TInfo {
 
         System.out.print("Enter Teacher name to edit or type B to go back: ");
         String teacherName = s.nextLine().trim();
-
+        
+        if (teacherName.equalsIgnoreCase("b")) {
+            displayAsAdmin();
+        }
+        
         List<String> matchedKeys = new ArrayList<>();
         for (String key : teachersData.info.keySet()) {
             ArrayList<String> details = teachersData.info.get(key);
@@ -287,8 +293,6 @@ public class TeachersDB implements TPDI, TInfo {
             System.out.println("No teacher found in the database with the name " + teacherName + ".");
             editTeacher();
             return;
-        } else if (teacherName.equalsIgnoreCase("b")) {
-            displayAsAdmin();
         }
 
         String selectedKey;

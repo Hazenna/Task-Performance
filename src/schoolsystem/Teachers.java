@@ -133,31 +133,38 @@ public class Teachers {
         SchoolSystem.system.students.studentData.loadFromFile(SchoolSystem.studentFile);
         Map<String, ArrayList<String>> studentInfo = SchoolSystem.system.students.studentData.info;
 
+        if (studentInfo.isEmpty()) {
+            System.out.println("No students found.");
+            return;
+        }
+
         for (String studentId : studentInfo.keySet()) {
             ArrayList<String> details = studentInfo.get(studentId);
             if (details == null || details.isEmpty()) {
                 continue;
             }
-            String studentName = details.get(0);
-            double[] studentGrades = grades.get(studentName.toLowerCase());
-            if (studentGrades != null && studentGrades.length == 4) {
-                System.out.println(studentName + " - Prelims: " + studentGrades[0] + " | Midterms: " + studentGrades[1]
-                        + " | Prefinals: " + studentGrades[2] + " | Finals: " + studentGrades[3]);
-                System.out.println("1 - Back\n2 - Exit");
-                int choice = SchoolSystem.choice(1, 2);
-                if (choice == 1) {
-                    teacherUserMenu();
-                } else if (choice == 2) {
-                    System.exit(0);
-                }
-            } else {
-                System.out.println(studentName + " - Prelims: 0 | Midterms: 0 | Prefinals: 0 | Finals: 0");
-                System.out.println("1 - Back\n2 - Exit");
-                int choice = SchoolSystem.choice(1, 2);
-                if (choice == 1) {
-                    teacherUserMenu();
-                } else if (choice == 2) {
-                    System.exit(0);
+            if (details.size() >= 11) {
+                String studentName = details.get(0);
+                double[] studentGrades = grades.get(studentName.toLowerCase());
+                if (studentGrades != null && studentGrades.length == 4) {
+                    System.out.println(studentName + " - Prelims: " + studentGrades[0] + " | Midterms: " + studentGrades[1]
+                            + " | Prefinals: " + studentGrades[2] + " | Finals: " + studentGrades[3]);
+                    System.out.println("1 - Back\n2 - Exit");
+                    int choice = SchoolSystem.choice(1, 2);
+                    if (choice == 1) {
+                        teacherUserMenu();
+                    } else if (choice == 2) {
+                        System.exit(0);
+                    }
+                } else {
+                    System.out.println(studentName + " - Prelims: 0 | Midterms: 0 | Prefinals: 0 | Finals: 0");
+                    System.out.println("1 - Back\n2 - Exit");
+                    int choice = SchoolSystem.choice(1, 2);
+                    if (choice == 1) {
+                        teacherUserMenu();
+                    } else if (choice == 2) {
+                        System.exit(0);
+                    }
                 }
             }
         }
@@ -192,7 +199,11 @@ public class Teachers {
 
     private void writeGrades() {
         System.out.print("Enter Student Name: ");
-        String name = s.nextLine();
+        String name = s.nextLine().trim();
+        if (name.isEmpty()) {
+            System.out.println("Name cannot be empty.");
+            return;
+        }
         double[] studentGrades = new double[4];
         System.out.print("Enter Grade(0 - 100): ");
         try {
@@ -209,9 +220,8 @@ public class Teachers {
                     && studentGrades[1] >= 0 && studentGrades[1] <= 100
                     && studentGrades[2] >= 0 && studentGrades[2] <= 100
                     && studentGrades[3] >= 0 && studentGrades[3] <= 100) {
-                grades.put(name.toLowerCase(), studentGrades);
+                SchoolSystem.system.students.updateGradesForStudent(name, studentGrades[0], studentGrades[1], studentGrades[2], studentGrades[3]);
                 System.out.println("Grades saved.");
-                updateStudentGWA(name);
             } else {
                 System.out.println("Grades must be between 0 and 100.");
             }
