@@ -460,39 +460,46 @@ public class StudentsDB implements PDI, APD, ASF {
             }
         }
 
-        ArrayList<String> details = studentData.info.get(selectedKey);
-        System.out.println("Student to remove ID: " + selectedKey + " - Details: " + details);
-        sentinel = true;
-        while (sentinel) {
-            System.out.print("Confirm removal?(Y/N): ");
-            String choice = s.nextLine().trim();
-            if (choice.equalsIgnoreCase("y")) {
-                studentData.info.remove(selectedKey);
-                try {
-                    System.out.println("Student removed successfully");
-                    studentData.saveToFile(SchoolSystem.studentFile);
-                } catch (Exception e) {
-                    System.err.println("Error removeing from file: " + e.getMessage());
+        if (studentData.info.containsKey(selectedKey)) {
+            ArrayList<String> details = studentData.info.get(selectedKey);
+            System.out.println("Student to remove ID: " + selectedKey + " - Details: " + details);
+            sentinel = true;
+            while (sentinel) {
+                System.out.print("Confirm removal?(Y/N): ");
+                String choice = s.nextLine().trim();
+                if (choice.equalsIgnoreCase("y")) {
+                    studentData.info.remove(selectedKey);
+                    if (studentData.idCounter > 1) {
+                        studentData.idCounter--;
+                    }
+                    try {
+                        System.out.println("Student removed successfully");
+                        studentData.saveToFile(SchoolSystem.studentFile);
+                    } catch (Exception e) {
+                        System.err.println("Error removeing from file: " + e.getMessage());
+                    }
+                    sentinel = false;
+                } else if (choice.equalsIgnoreCase("n")) {
+                    System.out.println("Removal Canvelled");
+                    sentinel = false;
+                } else {
+                    System.out.println("Please input Y or N");
                 }
-                sentinel = false;
-            } else if (choice.equalsIgnoreCase("n")) {
-                System.out.println("Removal Canvelled");
-                sentinel = false;
-            } else {
-                System.out.println("Please input Y or N");
             }
-        }
 
-        System.out.println("Press 1 to quit\nPress 2 to go back");
-        int choice = SchoolSystem.choice(1, 2);
+            System.out.println("Press 1 to quit\nPress 2 to go back");
+            int choice = SchoolSystem.choice(1, 2);
 
-        switch (choice) {
-            case 1 -> {
-                System.exit(0);
+            switch (choice) {
+                case 1 -> {
+                    System.exit(0);
+                }
+                case 2 -> {
+                    displayAsAdmin();
+                }
             }
-            case 2 -> {
-                displayAsAdmin();
-            }
+        } else {
+            System.out.println("Student ID not found.");
         }
     }
 }
