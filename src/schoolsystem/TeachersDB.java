@@ -30,7 +30,6 @@ public class TeachersDB implements TPDI, TInfo {
 
     static Scanner s = new Scanner(System.in);
     public static SchoolSystem system = new SchoolSystem();
-    Teachers menu = new Teachers();
     public DB teachersData = new DB();
 
     private boolean sentinel;

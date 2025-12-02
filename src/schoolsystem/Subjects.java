@@ -235,7 +235,7 @@ public class Subjects {
 
                 int subChoice = Integer.parseInt(scanner.nextLine());
                 switch (subChoice) {
-                    case 1:
+                    case 1 -> {
                         listAllSubjects();
                         System.out.print("Enter the number of the subject to add: ");
                         try {
@@ -249,8 +249,8 @@ public class Subjects {
                         } catch (NumberFormatException e) {
                             System.out.println("Invalid input.");
                         }
-                        break;
-                    case 2:
+                    }
+                    case 2 -> {
                         displaySubjectsForCourse(selectedCourse);
                         System.out.print("Enter the number of the subject to delete: ");
                         try {
@@ -264,19 +264,17 @@ public class Subjects {
                         } catch (NumberFormatException e) {
                             System.out.println("Invalid input.");
                         }
-                        break;
-                    case 3:
+                    }
+                    case 3 -> {
                         System.out.print("Enter subject name to check: ");
                         String subjName = scanner.nextLine();
                         checkSubjectInCourse(selectedCourse.name, subjName);
-                        break;
-                    case 4:
-                        displaySubjectsForCourse(selectedCourse);
-                        break;
-                    case 5:
+                    }
+                    case 4 -> displaySubjectsForCourse(selectedCourse);
+                    case 5 -> {
                         return;
-                    default:
-                        System.out.println("Invalid sub-option. Try again.");
+                    }
+                    default -> System.out.println("Invalid sub-option. Try again.");
                 }
             }
         } catch (NumberFormatException e) {
@@ -365,55 +363,47 @@ public class Subjects {
             int choice = SchoolSystem.choice(1, 10);
 
             switch (choice) {
-                case 1:
+                case 1 -> {
                     System.out.print("Enter course name: ");
                     String courseName = scanner.nextLine();
                     manager.addCourse(courseName);
-                    break;
-                case 2:
+                }
+                case 2 -> {
                     System.out.print("Enter subject name: ");
                     String subjectName = scanner.nextLine();
                     manager.addSubject(subjectName);
-                    break;
-                case 3:
+                }
+                case 3 -> {
                     System.out.print("Enter course name: ");
-                    courseName = scanner.nextLine();
+                    String courseName = scanner.nextLine();
                     System.out.print("Enter subject name: ");
-                    subjectName = scanner.nextLine();
+                    String subjectName = scanner.nextLine();
                     manager.addSubjectToCourse(courseName, subjectName);
-                    break;
-                case 4:
+                }
+                case 4 -> {
                     System.out.print("Enter course name: ");
-                    courseName = scanner.nextLine();
+                    String courseName = scanner.nextLine();
                     System.out.print("Enter subject name: ");
-                    subjectName = scanner.nextLine();
+                    String subjectName = scanner.nextLine();
                     manager.deleteSubjectFromCourse(courseName, subjectName);
-                    break;
-                case 5:
+                }
+                case 5 -> {
                     System.out.print("Enter course name: ");
-                    courseName = scanner.nextLine();
+                    String courseName = scanner.nextLine();
                     System.out.print("Enter subject name: ");
-                    subjectName = scanner.nextLine();
+                    String subjectName = scanner.nextLine();
                     manager.checkSubjectInCourse(courseName, subjectName);
-                    break;
-                case 6:
-                    manager.retrieveSubjectsForCourse(scanner);
-                    break;
-                case 7:
-                    manager.retrieveCoursesForSubject(scanner);
-                    break;
-                case 8:
-                    manager.listAllCourses();
-                    break;
-                case 9:
-                    manager.listAllSubjects();
-                    break;
-                case 10:
+                }
+                case 6 -> manager.retrieveSubjectsForCourse(scanner);
+                case 7 -> manager.retrieveCoursesForSubject(scanner);
+                case 8 -> manager.listAllCourses();
+                case 9 -> manager.listAllSubjects();
+                case 10 -> {
                     System.out.println("Exiting...");
                     scanner.close();
                     return;
-                default:
-                    System.out.println("Invalid option. Try again.");
+                }
+                default -> System.out.println("Invalid option. Try again.");
             }
         }
     }

@@ -45,7 +45,6 @@ public class StudentsDB implements PDI, APD, ASF {
     private String gender;
     private String getGPA = "0.0";
     private String course;
-    private int idCounter = 1;
     private static Subjects manager = new Subjects();
 
     @Override
