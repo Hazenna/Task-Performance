@@ -4,6 +4,7 @@
  */
 package schoolsystem;
 
+import java.io.*;
 import java.util.*;
 
 /**
@@ -19,6 +20,12 @@ class Room {
     public Room(int roomId, String name) {
         this.roomId = roomId;
         this.name = name;
+    }
+    
+    public Room(int roomId, String name, boolean booked) {
+        this.roomId = roomId;
+        this.name = name;
+        this.booked = booked;
     }
 
     public String getInfo() {
@@ -53,24 +60,57 @@ class Room {
 class School {
 
     private HashMap<Integer, Room> rooms;
-
+    private static final String roomsFile = "Roomsdatabase.txt";
     public School() {
         this.rooms = new HashMap<>();
-        Rooms();
+        loadRooms();
     }
-
-    private void Rooms() {
+    private void loadRooms() {
+        try {
+            BufferedReader reader = new BufferedReader(new FileReader(roomsFile));
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                if (parts.length == 3) {
+                    int roomId = Integer.parseInt(parts[0]);
+                    String name = parts[1];
+                    boolean booked = Boolean.parseBoolean(parts[2]);
+                    rooms.put(roomId, new Room(roomId, name, booked));
+                }
+            }
+            reader.close();
+        } catch (FileNotFoundException e) {
+            // File not there, make default rooms
+            createDefaultRooms();
+            saveRooms(); // Save them
+        } catch (IOException | NumberFormatException e) {
+            System.err.println("Error loading rooms: " + e.getMessage());
+            createDefaultRooms();
+        }
+    }
+    
+    private void createDefaultRooms() {
         rooms.put(1, new Room(1, "Room 101"));
         rooms.put(2, new Room(2, "Room 102"));
         rooms.put(3, new Room(3, "Room 103"));
         rooms.put(4, new Room(4, "Room 104"));
         rooms.put(5, new Room(5, "Room 105"));
     }
-
+    public void saveRooms() {
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter(roomsFile));
+            for (Room room : rooms.values()) {
+                writer.write(room.getRoomId() + "," + room.getName() + "," + room.isBooked());
+                writer.newLine();
+            }
+            writer.close();
+        } catch (IOException e) {
+            System.err.println("Error saving rooms: " + e.getMessage());
+        }
+    }
     public Room getRoom(int roomId) {
         return rooms.get(roomId);
     }
-
     public HashMap<Integer, Room> getAllRooms() {
         return rooms;
     }
@@ -139,6 +179,7 @@ public class RoomsTp {
             Room room = school.getRoom(roomId);
             if (room != null && "yes".equals(room.isAvailable())) {
                 room.book();
+                school.saveRooms();
                 System.out.println("Room " + roomId + " booked successfully.");
             } else {
                 System.out.println("Room not available or invalid ID.");
@@ -156,6 +197,7 @@ public class RoomsTp {
             Room room = school.getRoom(roomId);
             if (room != null && room.isBooked()) {
                 room.unbook();
+                school.saveRooms();
                 System.out.println("Room " + roomId + " unbooked successfully.");
             } else {
                 System.out.println("Room not booked or invalid ID.");
