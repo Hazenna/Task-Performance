@@ -407,6 +407,29 @@ public class Subjects {
             }
         }
     }
+    
+    public void displayAsUser() {
+    boolean loop = true;
+
+    while (loop) {
+        System.out.println("\n===== SUBJECTS (USER VIEW) =====");
+        System.out.println("1 - List All Courses");
+        System.out.println("2 - List All Subjects");
+        System.out.println("3 - View Subjects under a Course");
+        System.out.println("4 - View Courses of a Subject");
+        System.out.println("5 - Back");
+
+        int choice = SchoolSystem.choice(1, 5);
+
+        switch (choice) {
+            case 1 -> listAllCourses();
+            case 2 -> listAllSubjects();
+            case 3 -> retrieveSubjectsForCourse(SchoolSystem.s);
+            case 4 -> retrieveCoursesForSubject(SchoolSystem.s);
+            case 5 -> loop = false;
+        }
+    }
+}
 
     public static void menuAsAdmin() {
 

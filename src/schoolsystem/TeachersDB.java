@@ -45,7 +45,6 @@ public class TeachersDB implements TPDI, TInfo {
     @Override
     public void teacherID() {
         this.idString = String.valueOf(teachersData.idCounter++);
-        teachersData.info.put(idString, new ArrayList<>());
     }
 
     @Override
@@ -146,7 +145,7 @@ public class TeachersDB implements TPDI, TInfo {
         System.out.println("1 - Back\n2 - Exit");
         int choice = SchoolSystem.choice(1, 2);
         if (choice == 1) {
-            system.menu();
+            system.choicesMenu("User");
         } else if (choice == 2) {
             System.exit(0);
         }
@@ -186,7 +185,7 @@ public class TeachersDB implements TPDI, TInfo {
                 }
                 case 5 -> {
                     sentinel = false;
-                    system.menu();
+                    system.choicesMenu("Admin");
                 }
             }
         }
@@ -248,27 +247,91 @@ public class TeachersDB implements TPDI, TInfo {
     }
 
     private void removeTeacher() {
-        System.out.print("Enter Teacher ID to remove: ");
-        String rem = s.nextLine();
-
-        if (teachersData.info.containsKey(rem)) {
-            teachersData.info.remove(rem);
-            System.out.println("Teacher removed.");
-            teachersData.saveToFile(SchoolSystem.teacherFile);
-        } else {
-            System.out.println("Teacher ID not found.");
+        if (teachersData.info.isEmpty()) {
+            System.out.println("No teachers in database to remove");
+            displayAsAdmin();
+            return;
         }
 
-        System.out.println("Press 1 to quit\nPress 2 to go back");
-        int choice = SchoolSystem.choice(1, 2);
+        System.out.print("Enter name of teacher you want to remove or type B to exit to the Admin Menu: ");
+        String searchName = s.nextLine().trim();
 
-        switch (choice) {
-            case 1 -> {
-                System.exit(0);
+        if (searchName.equalsIgnoreCase("B")) {
+            displayAsAdmin();
+            return;
+        }
+
+        List<String> matchedKeys = new ArrayList<>();
+        for (String key : teachersData.info.keySet()) {
+            ArrayList<String> details = teachersData.info.get(key);
+            if (!details.isEmpty() && details.get(0).equalsIgnoreCase(searchName)) {
+                matchedKeys.add(key);
             }
-            case 2 -> {
-                displayAsAdmin();
+        }
+
+        if (matchedKeys.isEmpty()) {
+            System.out.println("No teachers found in database with the name " + searchName);
+            return;
+        }
+
+        String selectedKey;
+        if (matchedKeys.size() == 1) {
+            selectedKey = matchedKeys.get(0);
+        } else {
+            System.out.println("Multiple teachers foudn with that name:");
+            for (String key : matchedKeys) {
+                ArrayList<String> details = teachersData.info.get(key);
+                System.out.println("ID: " + key + " - " + details);
             }
+
+            System.out.print("Enter ID of teacher you want to remove from database: ");
+            selectedKey = s.nextLine().trim();
+            if (!matchedKeys.contains(selectedKey)) {
+                System.out.println("Invalid ID inputted");
+                return;
+            }
+        }
+        
+        if (teachersData.info.containsKey(selectedKey)) {
+            ArrayList<String> details = teachersData.info.get(selectedKey);
+            System.out.println("teacher to remove ID: " + selectedKey + " - Details: " + details);
+            sentinel = true;
+            while (sentinel) {
+                System.out.print("Confirm removal?(Y/N): ");
+                String choice = s.nextLine().trim();
+                if (choice.equalsIgnoreCase("y")) {
+                    teachersData.info.remove(selectedKey);
+                    if (teachersData.idCounter > 1) {
+                        teachersData.idCounter--;
+                    }
+                    try {
+                        System.out.println("Teacher removed successfully");
+                        teachersData.saveToFile(SchoolSystem.teacherFile);
+                    } catch (Exception e) {
+                        System.err.println("Error removeing from file: " + e.getMessage());
+                    }
+                    sentinel = false;
+                } else if (choice.equalsIgnoreCase("n")) {
+                    System.out.println("Removal Canvelled");
+                    sentinel = false;
+                } else {
+                    System.out.println("Please input Y or N");
+                }
+            }
+
+            System.out.println("Press 1 to quit\nPress 2 to go back");
+            int choice = SchoolSystem.choice(1, 2);
+
+            switch (choice) {
+                case 1 -> {
+                    System.exit(0);
+                }
+                case 2 -> {
+                    displayAsAdmin();
+                }
+            }
+        } else {
+            System.out.println("Teacher ID not found.");
         }
     }
 

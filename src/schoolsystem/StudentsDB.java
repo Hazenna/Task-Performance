@@ -47,10 +47,18 @@ public class StudentsDB implements PDI, APD, ASF {
     private String course;
     private static Subjects manager = new Subjects();
 
+    private String findNextAvailableId() {
+        int nextId = 1;  
+        while (studentData.info.containsKey(String.valueOf(nextId))) {
+            nextId++;  
+        }
+        return String.valueOf(nextId);
+    }
+
     @Override
     public void studentID() {
 
-        this.idString = String.valueOf(studentData.idCounter++);
+        this.idString = findNextAvailableId();
 
     }
 
@@ -203,21 +211,38 @@ public class StudentsDB implements PDI, APD, ASF {
             System.err.println("Error loading database: " + e.getMessage());
         }
 
-        System.out.println("Students in database:");
         if (studentData.info.isEmpty()) {
             System.out.println("No students found.");
         } else {
+            System.out.println("Students in database:");
             for (String key : studentData.info.keySet()) {
                 ArrayList<String> details = studentData.info.get(key);
-                if (details.size() >= 11) {
-                    double[] grades = {Double.parseDouble(details.get(7)), Double.parseDouble(details.get(8)),
-                        Double.parseDouble(details.get(9)), Double.parseDouble(details.get(10))};
-                    System.out.println("ID: " + key + " | Name: " + details.get(1) + " | ... | GPA: " + details.get(6)
-                            + " | Course: " + details.get(7) + " | Prelims: " + grades[0] + " | Midterms: " + grades[1]
-                            + " | Prefinals: " + grades[2] + " | Finals: " + grades[3]);
+                if (details.size() < 7) {
+                    System.out.println("Skipping invalid entry for ID " + key);
                 }
+                double prelim = 0;
+                double midterm = 0;
+                double prefinals = 0;
+                double finals = 0;
+                try {
+                    if (details.size() >= 11) {
+                        prelim = Double.parseDouble(details.get(7));
+                        midterm = Double.parseDouble(details.get(8));
+                        prefinals = Double.parseDouble(details.get(9));
+                        finals = Double.parseDouble(details.get(10));
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Warning: Invalid grades for ID " + key + ", defaulting to 0.");
+                }
+                System.out.println("ID: " + key + " | Name: " + details.get(0) + " | DOB: " + details.get(1)
+                        + " | Contact: " + details.get(2) + " | Gender: " + details.get(3)
+                        + " | GPA: " + (details.size() > 4 ? details.get(4) : "N/A")
+                        + " | Course: " + (details.size() > 5 ? details.get(5) : "N/A")
+                        + " | Prelims: " + prelim + " | Midterms: " + midterm
+                        + " | Prefinals: " + prefinals + " | Finals: " + finals);
             }
         }
+
         System.out.println("1 - Back\n2 - Exit");
         int choice = SchoolSystem.choice(1, 2);
         if (choice == 1) {
@@ -250,7 +275,7 @@ public class StudentsDB implements PDI, APD, ASF {
                     sentinel = false;
                 }
                 case 4 -> {
-                    system.menu();
+                    system.choicesMenu("Admin");
                     sentinel = false;
                 }
             }
@@ -258,7 +283,7 @@ public class StudentsDB implements PDI, APD, ASF {
     }
 
     public void addStudent() {
-        studentID();
+        this.idString = findNextAvailableId();
         studentData.info.putIfAbsent(this.idString, new ArrayList<>());
         System.out.println("Adding student with ID: " + this.idString);
 
@@ -439,6 +464,7 @@ public class StudentsDB implements PDI, APD, ASF {
 
         if (matchedKeys.isEmpty()) {
             System.out.println("No student found in database with the name " + searchName);
+            removeStudent();
             return;
         }
 
@@ -466,8 +492,8 @@ public class StudentsDB implements PDI, APD, ASF {
             sentinel = true;
             while (sentinel) {
                 System.out.print("Confirm removal?(Y/N): ");
-                String choice = s.nextLine().trim();
-                if (choice.equalsIgnoreCase("y")) {
+                String choice = s.nextLine().trim().toLowerCase();
+                if (choice.equalsIgnoreCase("y") || choice.equalsIgnoreCase("yes")) {
                     studentData.info.remove(selectedKey);
                     if (studentData.idCounter > 1) {
                         studentData.idCounter--;

@@ -1,7 +1,6 @@
 package schoolsystem;
 
 import java.util.*;
-import static schoolsystem.StudentsDB.system;
 
 /**
  *
@@ -11,7 +10,6 @@ public class Teachers {
 
     private static final Scanner s = new Scanner(System.in);
 
-    SchoolSystem system = new SchoolSystem();
     private final List<String> handouts = new ArrayList<>();
     public Map<String, double[]> grades = new HashMap<>();
     private String schedule = "No schedule assigned.";
@@ -76,7 +74,8 @@ public class Teachers {
         System.out.println("3 - View Teacher Time Schedule");
         System.out.println("4 - View Assigned Subject");
         System.out.println("5 - View Available rooms");
-        System.out.println("6 - Exit");
+        System.out.println("6 - Back");
+        System.out.println("7 - Exit");
 
         int c = SchoolSystem.choice(1, 6);
         switch (c) {
@@ -92,6 +91,8 @@ public class Teachers {
                 RoomsTp.menuView();
             case 6 ->
                 SchoolSystem.tdb.displayAsAdmin();
+            case 7 ->
+                System.exit(0);
         }
     }
 
@@ -216,17 +217,18 @@ public class Teachers {
             System.out.print("Enter Finals Grade (0-100): ");
             studentGrades[3] = Double.parseDouble(s.nextLine().trim());
 
-            if (studentGrades[0] >= 0 && studentGrades[0] <= 100
-                    && studentGrades[1] >= 0 && studentGrades[1] <= 100
-                    && studentGrades[2] >= 0 && studentGrades[2] <= 100
-                    && studentGrades[3] >= 0 && studentGrades[3] <= 100) {
-                SchoolSystem.system.students.updateGradesForStudent(name, studentGrades[0], studentGrades[1], studentGrades[2], studentGrades[3]);
-                System.out.println("Grades saved.");
-            } else {
-                System.out.println("Grades must be between 0 and 100.");
+            for (int i = 0; i < 4; i++) {
+                if (studentGrades[i] < 0 || studentGrades[i] > 100) {
+                    System.out.println("Grades must be between 0 and 100.");
+                    return;
+                } 
+                studentGrades[i] = Math.round(studentGrades[i] * 100) / 100.0;
             }
+            SchoolSystem.system.students.updateGradesForStudent(name, studentGrades[0], studentGrades[1], studentGrades[2], studentGrades[3]);
+            System.out.println("Grades saved and GPA updated.");
         } catch (NumberFormatException e) {
             System.err.println("Invalid grade input.");
+            writeGrades();
         }
     }
 

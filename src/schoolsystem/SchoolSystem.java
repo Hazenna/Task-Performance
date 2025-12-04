@@ -13,6 +13,7 @@ public class SchoolSystem {
     public static SchoolSystem system = new SchoolSystem();
     public static Teachers teacher = new Teachers();
     public static TeachersDB tdb = new TeachersDB();
+    public static Subjects subs = new Subjects();
     public static final String studentFile = "Studentdatabase.txt";
     public static final String teacherFile = "Teachersdatabase.txt";
     
@@ -46,7 +47,7 @@ public class SchoolSystem {
                 case 2 ->
                     tdb.displayAsUser();
                 case 3 ->
-                    System.out.println("Feature not implemented yet.");
+                     subs.displayAsUser();
                 case 4 ->
                     menu();
                 case 5 ->
