@@ -71,6 +71,7 @@ public class StudentsDB implements PDI, APD, ASF {
 
     @Override
     public void dob() {
+        sentinel = true;
         while (sentinel) {
             System.out.print("Enter Date of Birth (MM/DD/YYYY): ");
             sentinel = true;
@@ -79,7 +80,7 @@ public class StudentsDB implements PDI, APD, ASF {
                 if (dateInput.matches("\\d{2}/\\d{2}/\\d{4}")) {
                     String[] parts = dateInput.split("/");
                     int month = Integer.parseInt(parts[0]);
-                    if (month <= 1 || month <= 12) {
+                    if (month <= 1 && month <= 12) {
                         this.dob = dateInput;
                         sentinel = false;
                     } else {
@@ -145,26 +146,27 @@ public class StudentsDB implements PDI, APD, ASF {
 
     @Override
     public void GWA() {
-        double total = 0.0;
-        int count = 0;
+        double[] studentGrades = getGradesForStudent(this.name);
 
-        for (Map.Entry<String, double[]> entry : SchoolSystem.teacher.grades.entrySet()) {
-            if (entry.getKey().equalsIgnoreCase(this.name)) {
-                double[] studentGrades = entry.getValue();
-                if (studentGrades.length == 4) {
-                    total = (studentGrades[0] + studentGrades[1] + studentGrades[2] + studentGrades[3]) / 4.0;
-                    count++;
-                }
-
-            }
+        if (studentGrades != null && studentGrades.length == 4) {
+            double total = studentGrades[0] + studentGrades[1] + studentGrades[2] + studentGrades[3];
+            this.getGWA = String.format("%.2f", total / 4.0);
+        } else {
+            this.getGWA = "0.00";
         }
-        this.getGWA = count > 0 ? String.format("%.2f", total / count) : "0.00";
     }
 
-    public void updateGradesForStudent(String studentName, double prelim, double midterm, double prefinals, double finals) {
+    public boolean updateGradesForStudent(String studentName, double prelim, double midterm, double prefinals, double finals) {
+        try {
+        studentData.loadFromFile(SchoolSystem.studentFile);
+        } catch (Exception e) {
+            
+        }
+
         for (Map.Entry<String, ArrayList<String>> entry : studentData.info.entrySet()) {
             ArrayList<String> details = entry.getValue();
-            if (details.size() >= 11 && details.get(1).equalsIgnoreCase(studentName)) {
+            String storedName = details.size() > 1 ? details.get(0) : "";
+            if (details.size() >= 11 && storedName.equalsIgnoreCase(studentName.trim())) {
                 details.set(7, String.valueOf(prelim));
                 details.set(8, String.valueOf(midterm));
                 details.set(9, String.valueOf(prefinals));
@@ -174,10 +176,10 @@ public class StudentsDB implements PDI, APD, ASF {
                 details.set(6, String.format("%.2f", gpa));
                 studentData.saveToFile("Studentdatabase.txt");
                 System.out.println("Grades updated for " + studentName);
-                return;
+                return true;
             }
         }
-        System.out.println("Student not found.");
+        return false;
     }
 
     @Override
@@ -452,7 +454,6 @@ public class StudentsDB implements PDI, APD, ASF {
     public void removeStudent() {
         if (studentData.info.isEmpty()) {
             System.out.println("No students in database to remove");
-            displayAsAdmin();
             return;
         }
 

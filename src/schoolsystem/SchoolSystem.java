@@ -14,6 +14,7 @@ public class SchoolSystem {
     public static Teachers teacher = new Teachers();
     public static TeachersDB tdb = new TeachersDB();
     public static Subjects subs = new Subjects();
+    public RoomsTp r = new RoomsTp();
     public static final String studentFile = "Studentdatabase.txt";
     public static final String teacherFile = "Teachersdatabase.txt";
     
@@ -60,7 +61,7 @@ public class SchoolSystem {
                                3 - Edit subjects available
                                4 - Back
                                5 - Exit""");
-            int choice = choice(1, 6);
+            int choice = choice(1, 5);
             switch (choice) {
                 case 1 ->
                     students.displayAsAdmin();

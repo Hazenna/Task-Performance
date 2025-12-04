@@ -1,0 +1,5 @@
+1,Room 101,true
+2,Room 102,false
+3,Room 103,false
+4,Room 104,false
+5,Room 105,false

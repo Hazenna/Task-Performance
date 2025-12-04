@@ -11,7 +11,6 @@ public class Teachers {
     private static final Scanner s = new Scanner(System.in);
 
     private final List<String> handouts = new ArrayList<>();
-    public Map<String, double[]> grades = new HashMap<>();
     private String schedule = "No schedule assigned.";
     private String subject = "No subject assigned.";
     private boolean sentinel;
@@ -139,35 +138,21 @@ public class Teachers {
             return;
         }
 
-        for (String studentId : studentInfo.keySet()) {
-            ArrayList<String> details = studentInfo.get(studentId);
-            if (details == null || details.isEmpty()) {
-                continue;
-            }
-            if (details.size() >= 11) {
+        for (Map.Entry<String, ArrayList<String>> entry : studentInfo.entrySet()) {
+            ArrayList<String> details = entry.getValue();
+            if (details.size() >= 10) {
                 String studentName = details.get(0);
-                double[] studentGrades = grades.get(studentName.toLowerCase());
-                if (studentGrades != null && studentGrades.length == 4) {
-                    System.out.println(studentName + " - Prelims: " + studentGrades[0] + " | Midterms: " + studentGrades[1]
-                            + " | Prefinals: " + studentGrades[2] + " | Finals: " + studentGrades[3]);
-                    System.out.println("1 - Back\n2 - Exit");
-                    int choice = SchoolSystem.choice(1, 2);
-                    if (choice == 1) {
-                        teacherUserMenu();
-                    } else if (choice == 2) {
-                        System.exit(0);
-                    }
-                } else {
-                    System.out.println(studentName + " - Prelims: 0 | Midterms: 0 | Prefinals: 0 | Finals: 0");
-                    System.out.println("1 - Back\n2 - Exit");
-                    int choice = SchoolSystem.choice(1, 2);
-                    if (choice == 1) {
-                        teacherUserMenu();
-                    } else if (choice == 2) {
-                        System.exit(0);
-                    }
-                }
+                double[] studentGrades = SchoolSystem.system.students.getGradesForStudent(studentName);
+                System.out.println(studentName + " - Prelims: " + studentGrades[0] + " | Midterms: " + studentGrades[1]
+                        + " | Prefinals: " + studentGrades[2] + " | Finals: " + studentGrades[3]);
             }
+        }
+        System.out.println("1 - Back\n2 - Exit");
+        int choice = SchoolSystem.choice(1, 2);
+        if (choice == 1) {
+            teacherUserMenu();
+        } else if (choice == 2) {
+            System.exit(0);
         }
     }
 
@@ -191,7 +176,7 @@ public class Teachers {
     }
 
     public double calculateGWA(String studentName) {
-        double[] studentGrades = grades.get(studentName.toLowerCase());
+        double[] studentGrades = SchoolSystem.system.students.getGradesForStudent(studentName);
         if (studentGrades == null || studentGrades.length != 4) {
             return 0.0;
         }
@@ -206,7 +191,7 @@ public class Teachers {
             return;
         }
         double[] studentGrades = new double[4];
-        System.out.print("Enter Grade(0 - 100): ");
+        System.out.println("Enter Grade(0 - 100): ");
         try {
             System.out.print("Enter Prelim Grade (0-100): ");
             studentGrades[0] = Double.parseDouble(s.nextLine().trim());
@@ -221,11 +206,15 @@ public class Teachers {
                 if (studentGrades[i] < 0 || studentGrades[i] > 100) {
                     System.out.println("Grades must be between 0 and 100.");
                     return;
-                } 
+                }
                 studentGrades[i] = Math.round(studentGrades[i] * 100) / 100.0;
             }
-            SchoolSystem.system.students.updateGradesForStudent(name, studentGrades[0], studentGrades[1], studentGrades[2], studentGrades[3]);
-            System.out.println("Grades saved and GPA updated.");
+            boolean success = SchoolSystem.system.students.updateGradesForStudent(name, studentGrades[0], studentGrades[1], studentGrades[2], studentGrades[3]);
+            if (success) {
+                System.out.println("Grades saved and GPA updated.");
+            } else {
+                System.out.println("Student '" + name + "' not found. Grades not saved.");
+            }
         } catch (NumberFormatException e) {
             System.err.println("Invalid grade input.");
             writeGrades();

@@ -63,13 +63,14 @@ public class TeachersDB implements TPDI, TInfo {
 
     @Override
     public void dob() {
+        sentinel = true;
         while (sentinel) {
             System.out.print("Enter Date of Birth (MM/DD/YYYY): ");
             String dateInput = s.nextLine().trim();
             if (dateInput.matches("\\d{2}/\\d{2}/\\d{4}")) {
                 String[] parts = dateInput.split("/");
                 int month = Integer.parseInt(parts[0]);
-                if (month <= 1 || month <= 12) {
+                if (month <= 1 && month <= 12) {
                     this.dob = dateInput;
                     sentinel = false;
                 } else {
@@ -99,15 +100,50 @@ public class TeachersDB implements TPDI, TInfo {
 
     @Override
     public void gender() {
-        System.out.print("Enter Gender (Optional, leave blank): ");
-        String g = s.nextLine().strip();
-        this.gender = g.equals("") ? "Not given" : g;
+        System.out.print("Enter Gender(Optional, Leave Blank): ");
+        String genderString = s.nextLine().strip();
+        if (!genderString.equalsIgnoreCase("Male") && !genderString.equals("Female") && !genderString.equalsIgnoreCase("M") && !genderString.equalsIgnoreCase("F")) {
+            System.out.println("Enter a proper gender M/Male/F/Female");
+            gender();
+        } else if (genderString.isEmpty()) {
+            this.gender = "Not given";
+        } else {
+            this.gender = genderString;
+        }
+
     }
 
     @Override
     public void assignedSubject() {
-        System.out.print("Enter Assigned Subject: ");
-        this.subject = s.nextLine().trim();
+        Subjects subjectsManager = SchoolSystem.subs;
+        subjectsManager.listAllCourses();
+        System.out.print("Enter Course Assigned: ");
+        try {
+            int courseChoice = Integer.parseInt(s.nextLine().trim());
+            LinkedList<Course> courses = subjectsManager.courses;
+            if (courseChoice < 1 || courseChoice > courses.size()) {
+                System.out.println("Invalid choice. Defaulting to 'None'.");
+                this.subject = "None";
+                return;
+            }
+            Course selectedCourse = courses.get(courseChoice - 1);
+            System.out.println("Subjects in " + selectedCourse.name + ":");
+            for (int i = 0; i < selectedCourse.subjects.size(); i++) {
+                System.out.println((i + 1) + ". " + selectedCourse.subjects.get(i).name);
+            }
+            System.out.print("Enter Subject Assigned: ");
+            int subjectChoice = Integer.parseInt(s.nextLine().trim());
+            if (subjectChoice < 1 || subjectChoice > selectedCourse.subjects.size()) {
+                System.out.println("Invalid choice. Defaulting to 'None'.");
+                this.subject = "None";
+                return;
+            }
+            Subject selectedSubject = selectedCourse.subjects.get(subjectChoice - 1);
+            this.subject = selectedCourse.name + " - " + selectedSubject.name;
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input, defaulting to 'none'.");
+            this.subject = "none";
+        }
     }
 
     @Override
@@ -116,12 +152,24 @@ public class TeachersDB implements TPDI, TInfo {
         this.schedule = s.nextLine().trim();
     }
 
-    public void setPassword() {
-        System.out.print("Set credentials for this teacher: ");
-        this.password = s.nextLine().trim();
-        if (this.password.isEmpty()) {
-            System.out.println("Credential cannot be empty. setting password to password");
+    public void setPassword(String currentPassword) {
+        if (currentPassword != null && !currentPassword.isEmpty()) {
+            System.out.print("Enter current password: ");
+            String enteredPassword = s.nextLine().trim();
+            if (!enteredPassword.equals(currentPassword)) {
+                System.out.println("Incorrect current password. Password change denied.");
+                return;
+            }
+        }
+
+        System.out.print("Enter new password: ");
+        String newPassword = s.nextLine().trim();
+        if (newPassword.isEmpty()) {
+            System.out.println("Password cannot be empty. Setting to default 'password'.");
             this.password = "password";
+        } else {
+            this.password = newPassword;
+            System.out.println("Password updated successfully.");
         }
     }
 
@@ -202,8 +250,8 @@ public class TeachersDB implements TPDI, TInfo {
 
     public void addTeacher() {
         this.idString = findNextAvailableId();
+        teachersData.info.putIfAbsent(this.idString, new ArrayList<>());
         System.out.println("Enter the following details for ID: " + this.idString);
-        System.out.println("Adding student with ID: " + this.idString);
 
         name();
         teachersData.info.get(this.idString).add(this.name);
@@ -223,7 +271,7 @@ public class TeachersDB implements TPDI, TInfo {
         timeSchedule();
         teachersData.info.get(this.idString).add(this.schedule);
 
-        setPassword();
+        setPassword(null);
         teachersData.info.get(this.idString).add(this.password);
 
         try {
@@ -249,7 +297,6 @@ public class TeachersDB implements TPDI, TInfo {
     private void removeTeacher() {
         if (teachersData.info.isEmpty()) {
             System.out.println("No teachers in database to remove");
-            displayAsAdmin();
             return;
         }
 
@@ -383,14 +430,14 @@ public class TeachersDB implements TPDI, TInfo {
         System.out.println("DOB: " + t.get(1));
         System.out.println("Contact: " + t.get(2));
         System.out.println("Gender: " + t.get(3));
-        System.out.println("GPA: " + t.get(4));
-        System.out.println("Course: " + t.get(5));
+        System.out.println("Assigned Course and Subject: " + t.get(4));
+        System.out.println("Schedule: " + t.get(5));
 
         System.out.println("1 - Change Name");
         System.out.println("2 - Change DOB");
         System.out.println("3 - Change Contact");
         System.out.println("4 - Change Gender");
-        System.out.println("5 - Change Subject");
+        System.out.println("5 - Change Assigned Subject");
         System.out.println("6 - Change Schedule");
         System.out.println("7 - Change credential");
         System.out.println("8 - Back");
@@ -422,7 +469,7 @@ public class TeachersDB implements TPDI, TInfo {
                 t.set(5, schedule);
             }
             case 7 -> {
-                setPassword();
+                setPassword(t.get(6));
                 t.set(6, password);
             }
             case 8 -> {
