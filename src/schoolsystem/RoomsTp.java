@@ -80,9 +80,7 @@ class School {
             }
             reader.close();
         } catch (FileNotFoundException e) {
-            // File not there, make default rooms
             createDefaultRooms();
-            saveRooms(); // Save them
         } catch (IOException | NumberFormatException e) {
             System.err.println("Error loading rooms: " + e.getMessage());
             createDefaultRooms();
