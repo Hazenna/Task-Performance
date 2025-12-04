@@ -1,4 +1,4 @@
-1,Room 101,true
+1,Room 101,false
 2,Room 102,false
 3,Room 103,false
 4,Room 104,false

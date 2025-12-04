@@ -80,7 +80,7 @@ public class StudentsDB implements PDI, APD, ASF {
                 if (dateInput.matches("\\d{2}/\\d{2}/\\d{4}")) {
                     String[] parts = dateInput.split("/");
                     int month = Integer.parseInt(parts[0]);
-                    if (month <= 1 && month <= 12) {
+                    if (month <= 1 || month <= 12) {
                         this.dob = dateInput;
                         sentinel = false;
                     } else {
@@ -130,7 +130,7 @@ public class StudentsDB implements PDI, APD, ASF {
     public double[] getGradesForStudent(String studentName) {
         for (Map.Entry<String, ArrayList<String>> entry : studentData.info.entrySet()) {
             ArrayList<String> details = entry.getValue();
-            if (details.size() >= 11 && details.get(1).equalsIgnoreCase(studentName)) {
+            if (details.size() >= 11 && details.get(0).equalsIgnoreCase(studentName)) {
                 try {
                     double prelim = Double.parseDouble(details.get(7));
                     double midterm = Double.parseDouble(details.get(8));
@@ -141,7 +141,7 @@ public class StudentsDB implements PDI, APD, ASF {
                 }
             }
         }
-        return new double[]{0, 0, 0, 0};  // Default for ungraded
+        return new double[]{0, 0, 0, 0};
     }
 
     @Override
@@ -158,25 +158,37 @@ public class StudentsDB implements PDI, APD, ASF {
 
     public boolean updateGradesForStudent(String studentName, double prelim, double midterm, double prefinals, double finals) {
         try {
-        studentData.loadFromFile(SchoolSystem.studentFile);
+            studentData.loadFromFile(SchoolSystem.studentFile);
         } catch (Exception e) {
-            
+            System.err.println("Error loading file.");
+            return false;
+        }
+
+        if (prelim < 0 || prelim > 100 || midterm < 0 || midterm > 100
+                || prefinals < 0 || prefinals > 100 || finals < 0 || finals > 100) {
+            System.out.println("Grades must be between 0 and 100.");
+            return false;
         }
 
         for (Map.Entry<String, ArrayList<String>> entry : studentData.info.entrySet()) {
             ArrayList<String> details = entry.getValue();
-            String storedName = details.size() > 1 ? details.get(0) : "";
-            if (details.size() >= 11 && storedName.equalsIgnoreCase(studentName.trim())) {
-                details.set(7, String.valueOf(prelim));
-                details.set(8, String.valueOf(midterm));
-                details.set(9, String.valueOf(prefinals));
-                details.set(10, String.valueOf(finals));
-                // Recalculate GPA
+            String storedName = details.get(0);
+            if (storedName.equalsIgnoreCase(studentName.trim())) {
+                details.set(4, String.valueOf(prelim));
+                details.set(5, String.valueOf(midterm));
+                details.set(6, String.valueOf(prefinals));
+                details.set(7, String.valueOf(finals));
+
                 double gpa = calculateGPA(prelim, midterm, prefinals, finals);
-                details.set(6, String.format("%.2f", gpa));
-                studentData.saveToFile("Studentdatabase.txt");
-                System.out.println("Grades updated for " + studentName);
-                return true;
+                details.set(8, String.format("%.2f", gpa));
+                try {
+                    studentData.saveToFile("Studentdatabase.txt");
+                    System.out.println("Grades updated for " + studentName);
+                    return true;
+                } catch (Exception e) {
+                    System.err.println("Error saving grades: " + e.getMessage());
+                    return false;
+                }
             }
         }
         return false;
@@ -326,7 +338,7 @@ public class StudentsDB implements PDI, APD, ASF {
 
         double[] grades = getGradesForStudent(this.name);
         double gpa = calculateGPA(grades[0], grades[1], grades[2], grades[3]);
-        studentData.info.get(this.idString).set(6, String.format("%.2f", gpa));
+        studentData.info.get(this.idString).set(8, String.format("%.2f", gpa));
 
         try {
             System.out.println("Student added successfully!");

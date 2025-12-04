@@ -70,7 +70,7 @@ public class TeachersDB implements TPDI, TInfo {
             if (dateInput.matches("\\d{2}/\\d{2}/\\d{4}")) {
                 String[] parts = dateInput.split("/");
                 int month = Integer.parseInt(parts[0]);
-                if (month <= 1 && month <= 12) {
+                if (month <= 1 || month <= 12) {
                     this.dob = dateInput;
                     sentinel = false;
                 } else {
@@ -108,7 +108,8 @@ public class TeachersDB implements TPDI, TInfo {
         } else if (genderString.isEmpty()) {
             this.gender = "Not given";
         } else {
-            this.gender = genderString;
+            System.out.println("Invalid gender. Use Male/Female or M/F.");
+            gender();
         }
 
     }

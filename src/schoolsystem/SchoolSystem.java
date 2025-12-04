@@ -98,5 +98,4 @@ public class SchoolSystem {
         SchoolSystem.tdb.teachersData.loadFromFile(teacherFile); //This as well
         system.menu();
     }
-
 }

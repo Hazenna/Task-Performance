@@ -28,14 +28,13 @@ public class Teachers {
             }
 
             boolean found = false;
-            String teacherID = null;
             String storedCredential = null;
 
             for (Map.Entry<String, ArrayList<String>> entry : SchoolSystem.tdb.teachersData.info.entrySet()) {
                 ArrayList<String> details = entry.getValue();
                 if (!details.isEmpty() && details.get(0).equals(input)) {
                     found = true;
-                    teacherID = entry.getKey();
+                    entry.getKey();
                     storedCredential = details.size() > 6 ? details.get(6) : null;
                     break;
                 }
@@ -193,13 +192,13 @@ public class Teachers {
         double[] studentGrades = new double[4];
         System.out.println("Enter Grade(0 - 100): ");
         try {
-            System.out.print("Enter Prelim Grade (0-100): ");
+            System.out.print("Enter Prelim Grade: ");
             studentGrades[0] = Double.parseDouble(s.nextLine().trim());
-            System.out.print("Enter Midterm Grade (0-100): ");
+            System.out.print("Enter Midterm Grade: ");
             studentGrades[1] = Double.parseDouble(s.nextLine().trim());
-            System.out.print("Enter Prefinals Grade (0-100): ");
+            System.out.print("Enter Prefinals Grade: ");
             studentGrades[2] = Double.parseDouble(s.nextLine().trim());
-            System.out.print("Enter Finals Grade (0-100): ");
+            System.out.print("Enter Finals Grade: ");
             studentGrades[3] = Double.parseDouble(s.nextLine().trim());
 
             for (int i = 0; i < 4; i++) {
@@ -212,6 +211,13 @@ public class Teachers {
             boolean success = SchoolSystem.system.students.updateGradesForStudent(name, studentGrades[0], studentGrades[1], studentGrades[2], studentGrades[3]);
             if (success) {
                 System.out.println("Grades saved and GPA updated.");
+                System.out.println("1 - Back\n2 - Exit");
+                int choice = SchoolSystem.choice(1, 2);
+                if (choice == 1) {
+                    teacherAdminMenu();
+                } else if (choice == 2) {
+                    System.exit(0);
+                }
             } else {
                 System.out.println("Student '" + name + "' not found. Grades not saved.");
             }
@@ -259,7 +265,7 @@ public class Teachers {
 
     public void updateStudentGWA(String studentName) {
         try {
-            SchoolSystem.system.students.studentData.loadFromFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt");
+            SchoolSystem.system.students.studentData.loadFromFile(SchoolSystem.studentFile);
         } catch (Exception e) {
             return;
         }
@@ -274,7 +280,7 @@ public class Teachers {
         }
 
         try {
-            SchoolSystem.system.students.studentData.saveToFile("C:\\Users\\Hazenna\\Documents\\NetBeansProjects\\SchoolSystem\\src\\schoolsystem\\Studentdatabase.txt");
+            SchoolSystem.system.students.studentData.saveToFile(SchoolSystem.studentFile);
             System.out.println("GWA updated and saved for " + studentName);
         } catch (Exception e) {
         }
