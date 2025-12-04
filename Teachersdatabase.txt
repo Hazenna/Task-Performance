@@ -1,2 +1,2 @@
 COUNTER,0
-1,Mika Jed,11/08/2005,09706365135,Male,IT101 - Programming,3:00 - 4:00PM,itsmemcale
+1,Mika Jed,11/08/2005,09706365135,Male,CPE102 - Embedded Systems,3:00 - 4:00PM,itsmemcale

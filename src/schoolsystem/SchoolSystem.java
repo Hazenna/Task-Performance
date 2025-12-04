@@ -8,15 +8,17 @@ import java.util.*;
  */
 public class SchoolSystem {
 
-    public StudentsDB students = new StudentsDB();
+    public static StudentsDB students = new StudentsDB();
     static Scanner s = new Scanner(System.in);
     public static SchoolSystem system = new SchoolSystem();
     public static Teachers teacher = new Teachers();
     public static TeachersDB tdb = new TeachersDB();
     public static Subjects subs = new Subjects();
-    public RoomsTp r = new RoomsTp();
+    public static RoomsTp r = new RoomsTp();
     public static final String studentFile = "Studentdatabase.txt";
     public static final String teacherFile = "Teachersdatabase.txt";
+    public static final String handoutFile = "Handoutsdatabase.txt";
+    public static final String roomsFile = "Roomsdatabase.txt";
     
     static int choice(int min, int max) {
         while (true) {
@@ -94,8 +96,10 @@ public class SchoolSystem {
     }
 
     public static void main(String[] args) {
-        system.students.studentData.loadFromFile(studentFile); //Do not mind this
-        SchoolSystem.tdb.teachersData.loadFromFile(teacherFile); //This as well
+        SchoolSystem.students.studentData.loadFromFile(studentFile); 
+        SchoolSystem.tdb.teachersData.loadFromFile(teacherFile); 
+        SchoolSystem.teacher.handoutsData.loadFromFile(handoutFile);
+        SchoolSystem.r.roomsDB.loadFromFile(roomsFile);
         system.menu();
     }
 }

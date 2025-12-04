@@ -60,25 +60,25 @@ class Room {
 class School {
 
     private HashMap<Integer, Room> rooms;
-    private static final String roomsFile = "Roomsdatabase.txt";
+    
     public School() {
         this.rooms = new HashMap<>();
         loadRooms();
     }
     private void loadRooms() {
         try {
-            BufferedReader reader = new BufferedReader(new FileReader(roomsFile));
-            String line;
-            while ((line = reader.readLine()) != null) {
-                String[] parts = line.split(",");
-                if (parts.length == 3) {
-                    int roomId = Integer.parseInt(parts[0]);
-                    String name = parts[1];
-                    boolean booked = Boolean.parseBoolean(parts[2]);
-                    rooms.put(roomId, new Room(roomId, name, booked));
+            try (BufferedReader reader = new BufferedReader(new FileReader(SchoolSystem.roomsFile))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    String[] parts = line.split(",");
+                    if (parts.length == 3) {
+                        int roomId = Integer.parseInt(parts[0]);
+                        String name = parts[1];
+                        boolean booked = Boolean.parseBoolean(parts[2]);
+                        rooms.put(roomId, new Room(roomId, name, booked));
+                    }
                 }
             }
-            reader.close();
         } catch (FileNotFoundException e) {
             createDefaultRooms();
         } catch (IOException | NumberFormatException e) {
@@ -96,12 +96,12 @@ class School {
     }
     public void saveRooms() {
         try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(roomsFile));
-            for (Room room : rooms.values()) {
-                writer.write(room.getRoomId() + "," + room.getName() + "," + room.isBooked());
-                writer.newLine();
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(SchoolSystem.roomsFile))) {
+                for (Room room : rooms.values()) {
+                    writer.write(room.getRoomId() + "," + room.getName() + "," + room.isBooked());
+                    writer.newLine();
+                }
             }
-            writer.close();
         } catch (IOException e) {
             System.err.println("Error saving rooms: " + e.getMessage());
         }
@@ -119,6 +119,7 @@ public class RoomsTp {
     static Scanner s = new Scanner(System.in);
     static Teachers t = new Teachers();
     static School school = new School();
+    public DB roomsDB = new DB();
 
     public static void menuView() {
 

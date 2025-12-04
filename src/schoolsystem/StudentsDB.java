@@ -130,18 +130,19 @@ public class StudentsDB implements PDI, APD, ASF {
     public double[] getGradesForStudent(String studentName) {
         for (Map.Entry<String, ArrayList<String>> entry : studentData.info.entrySet()) {
             ArrayList<String> details = entry.getValue();
-            if (details.size() >= 11 && details.get(0).equalsIgnoreCase(studentName)) {
+            if (details.get(0).equalsIgnoreCase(studentName)) {
                 try {
-                    double prelim = Double.parseDouble(details.get(7));
-                    double midterm = Double.parseDouble(details.get(8));
-                    double prefinals = Double.parseDouble(details.get(9));
-                    double finals = Double.parseDouble(details.get(10));
-                    return new double[]{prelim, midterm, prefinals, finals};
+                    double prelim = Double.parseDouble(details.get(4));
+                    double midterm = Double.parseDouble(details.get(5));
+                    double prefinals = Double.parseDouble(details.get(6));
+                    double finals = Double.parseDouble(details.get(7));
+                    double GWA = Double.parseDouble(details.get(8));
+                    return new double[]{prelim, midterm, prefinals, finals, GWA};
                 } catch (NumberFormatException | IndexOutOfBoundsException e) {
                 }
             }
         }
-        return new double[]{0, 0, 0, 0};
+        return new double[]{0, 0, 0, 0, 0};
     }
 
     @Override
@@ -244,26 +245,9 @@ public class StudentsDB implements PDI, APD, ASF {
                 if (details.size() < 7) {
                     System.out.println("Skipping invalid entry for ID " + key);
                 }
-                double prelim = 0;
-                double midterm = 0;
-                double prefinals = 0;
-                double finals = 0;
-                try {
-                    if (details.size() >= 11) {
-                        prelim = Double.parseDouble(details.get(7));
-                        midterm = Double.parseDouble(details.get(8));
-                        prefinals = Double.parseDouble(details.get(9));
-                        finals = Double.parseDouble(details.get(10));
-                    }
-                } catch (NumberFormatException e) {
-                    System.out.println("Warning: Invalid grades for ID " + key + ", defaulting to 0.");
-                }
                 System.out.println("ID: " + key + " | Name: " + details.get(0) + " | DOB: " + details.get(1)
                         + " | Contact: " + details.get(2) + " | Gender: " + details.get(3)
-                        + " | GPA: " + (details.size() > 4 ? details.get(4) : "N/A")
-                        + " | Course: " + (details.size() > 5 ? details.get(5) : "N/A")
-                        + " | Prelims: " + prelim + " | Midterms: " + midterm
-                        + " | Prefinals: " + prefinals + " | Finals: " + finals);
+                        + " | Course: " + (details.size() > 5 ? details.get(9) : "N/A"));
             }
         }
 
