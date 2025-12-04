@@ -48,9 +48,9 @@ public class StudentsDB implements PDI, APD, ASF {
     private static Subjects manager = new Subjects();
 
     private String findNextAvailableId() {
-        int nextId = 1;  
+        int nextId = 1;
         while (studentData.info.containsKey(String.valueOf(nextId))) {
-            nextId++;  
+            nextId++;
         }
         return String.valueOf(nextId);
     }
@@ -112,7 +112,10 @@ public class StudentsDB implements PDI, APD, ASF {
     public void gender() {
         System.out.print("Enter Gender(Optional, Leave Blank): ");
         String genderString = s.nextLine().strip();
-        if (genderString.isEmpty()) {
+        if (!genderString.equalsIgnoreCase("Male") && !genderString.equals("Female") && !genderString.equalsIgnoreCase("M") && !genderString.equalsIgnoreCase("F")) {
+            System.out.println("Enter a proper gender M/Male/F/Female");
+            gender();
+        } else if (genderString.isEmpty()) {
             this.gender = "Not given";
         } else {
             this.gender = genderString;
@@ -213,6 +216,13 @@ public class StudentsDB implements PDI, APD, ASF {
 
         if (studentData.info.isEmpty()) {
             System.out.println("No students found.");
+            System.out.println("1 - Back\n2 - Exit");
+            int choice = SchoolSystem.choice(1, 2);
+            if (choice == 1) {
+                system.choicesMenu("user");
+            } else if (choice == 2) {
+                System.exit(0);
+            }
         } else {
             System.out.println("Students in database:");
             for (String key : studentData.info.keySet()) {

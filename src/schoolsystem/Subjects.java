@@ -270,11 +270,13 @@ public class Subjects {
                         String subjName = scanner.nextLine();
                         checkSubjectInCourse(selectedCourse.name, subjName);
                     }
-                    case 4 -> displaySubjectsForCourse(selectedCourse);
+                    case 4 ->
+                        displaySubjectsForCourse(selectedCourse);
                     case 5 -> {
                         return;
                     }
-                    default -> System.out.println("Invalid sub-option. Try again.");
+                    default ->
+                        System.out.println("Invalid sub-option. Try again.");
                 }
             }
         } catch (NumberFormatException e) {
@@ -342,96 +344,95 @@ public class Subjects {
         return null;
     }
 
-    public void menuAsUser() {
-        Subjects manager = new Subjects();
-        Scanner scanner = new Scanner(System.in);
+    public void displayAsUser() {
+        boolean loop = true;
 
-        while (true) {
-            System.out.println("Menu: ");
-            System.out.println("1. Add Course");
-            System.out.println("2. Add Subject");
-            System.out.println("3. Add Subject to Course");
-            System.out.println("4. Delete Subject from Course");
-            System.out.println("5. Check if Subject is in Course");
-            System.out.println("6. Retrieve Subjects for Course (Select from List)");
-            System.out.println("7. Retrieve Courses for Subject (Select from List)");
-            System.out.println("8. List All Courses");
-            System.out.println("9. List All Subjects");
-            System.out.println("10. Exit");
-            System.out.print("Choose an option: ");
+        while (loop) {
+            System.out.println("\n===== SUBJECTS (USER VIEW) =====");
+            System.out.println("1 - List All Courses");
+            System.out.println("2 - List All Subjects");
+            System.out.println("3 - View Subjects under a Course");
+            System.out.println("4 - View Courses of a Subject");
+            System.out.println("5 - Back");
+
+            int choice = SchoolSystem.choice(1, 5);
+
+            switch (choice) {
+                case 1 ->
+                    listAllCourses();
+                case 2 ->
+                    listAllSubjects();
+                case 3 ->
+                    retrieveSubjectsForCourse(SchoolSystem.s);
+                case 4 ->
+                    retrieveCoursesForSubject(SchoolSystem.s);
+                case 5 ->
+                    loop = false;
+            }
+        }
+    }
+
+    public void displayAsAdmin() {
+        boolean loop = true;
+
+        while (loop) {
+            System.out.println("\n===== SUBJECTS (ADMIN VIEW) =====");
+            System.out.println("1 - Add Course");
+            System.out.println("2 - Add Subject");
+            System.out.println("3 - Add Subject to Course");
+            System.out.println("4 - Delete Subject from Course");
+            System.out.println("5 - Check if Subject is in Course");
+            System.out.println("6 - View Subjects under a Course");
+            System.out.println("7 - View Courses of a Subject");
+            System.out.println("8 - List All Courses");
+            System.out.println("9 - List All Subjects");
+            System.out.println("10 - Back");
 
             int choice = SchoolSystem.choice(1, 10);
 
             switch (choice) {
                 case 1 -> {
                     System.out.print("Enter course name: ");
-                    String courseName = scanner.nextLine();
-                    manager.addCourse(courseName);
+                    String name = SchoolSystem.s.nextLine();
+                    addCourse(name);
                 }
                 case 2 -> {
                     System.out.print("Enter subject name: ");
-                    String subjectName = scanner.nextLine();
-                    manager.addSubject(subjectName);
+                    String name = SchoolSystem.s.nextLine();
+                    addSubject(name);
                 }
                 case 3 -> {
                     System.out.print("Enter course name: ");
-                    String courseName = scanner.nextLine();
+                    String c = SchoolSystem.s.nextLine();
                     System.out.print("Enter subject name: ");
-                    String subjectName = scanner.nextLine();
-                    manager.addSubjectToCourse(courseName, subjectName);
+                    String s = SchoolSystem.s.nextLine();
+                    addSubjectToCourse(c, s);
                 }
                 case 4 -> {
                     System.out.print("Enter course name: ");
-                    String courseName = scanner.nextLine();
+                    String c = SchoolSystem.s.nextLine();
                     System.out.print("Enter subject name: ");
-                    String subjectName = scanner.nextLine();
-                    manager.deleteSubjectFromCourse(courseName, subjectName);
+                    String s = SchoolSystem.s.nextLine();
+                    deleteSubjectFromCourse(c, s);
                 }
                 case 5 -> {
                     System.out.print("Enter course name: ");
-                    String courseName = scanner.nextLine();
+                    String c = SchoolSystem.s.nextLine();
                     System.out.print("Enter subject name: ");
-                    String subjectName = scanner.nextLine();
-                    manager.checkSubjectInCourse(courseName, subjectName);
+                    String s = SchoolSystem.s.nextLine();
+                    checkSubjectInCourse(c, s);
                 }
-                case 6 -> manager.retrieveSubjectsForCourse(scanner);
-                case 7 -> manager.retrieveCoursesForSubject(scanner);
-                case 8 -> manager.listAllCourses();
-                case 9 -> manager.listAllSubjects();
-                case 10 -> {
-                    System.out.println("Exiting...");
-                    scanner.close();
-                    return;
-                }
-                default -> System.out.println("Invalid option. Try again.");
+                case 6 ->
+                    retrieveSubjectsForCourse(SchoolSystem.s);
+                case 7 ->
+                    retrieveCoursesForSubject(SchoolSystem.s);
+                case 8 ->
+                    listAllCourses();
+                case 9 ->
+                    listAllSubjects();
+                case 10 ->
+                    loop = false;
             }
         }
-    }
-    
-    public void displayAsUser() {
-    boolean loop = true;
-
-    while (loop) {
-        System.out.println("\n===== SUBJECTS (USER VIEW) =====");
-        System.out.println("1 - List All Courses");
-        System.out.println("2 - List All Subjects");
-        System.out.println("3 - View Subjects under a Course");
-        System.out.println("4 - View Courses of a Subject");
-        System.out.println("5 - Back");
-
-        int choice = SchoolSystem.choice(1, 5);
-
-        switch (choice) {
-            case 1 -> listAllCourses();
-            case 2 -> listAllSubjects();
-            case 3 -> retrieveSubjectsForCourse(SchoolSystem.s);
-            case 4 -> retrieveCoursesForSubject(SchoolSystem.s);
-            case 5 -> loop = false;
-        }
-    }
-}
-
-    public static void menuAsAdmin() {
-
     }
 }

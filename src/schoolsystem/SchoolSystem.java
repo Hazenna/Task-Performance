@@ -67,7 +67,7 @@ public class SchoolSystem {
                 case 2 ->
                     tdb.displayAsAdmin();
                 case 3 ->
-                    System.out.println("Feature not implemented yet.");
+                    subs.displayAsAdmin();
                 case 4 ->
                     menu();
                 case 5 ->

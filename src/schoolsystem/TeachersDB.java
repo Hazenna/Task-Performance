@@ -42,9 +42,17 @@ public class TeachersDB implements TPDI, TInfo {
     private String schedule = "Not Assigned";
     private String password;
 
+    private String findNextAvailableId() {
+        int nextId = 1;
+        while (teachersData.info.containsKey(String.valueOf(nextId))) {
+            nextId++;
+        }
+        return String.valueOf(nextId);
+    }
+
     @Override
     public void teacherID() {
-        this.idString = String.valueOf(teachersData.idCounter++);
+        this.idString = findNextAvailableId();
     }
 
     @Override
@@ -79,7 +87,8 @@ public class TeachersDB implements TPDI, TInfo {
             String c = s.nextLine();
             if (c.isEmpty()) {
                 System.out.print("Contact Required. Enter Contact Number: ");
-            } if (c.matches("^\\d{11}$")){
+            }
+            if (c.matches("^\\d{11}$")) {
                 this.contact = c;
                 sentinel = false;
             } else {
@@ -129,7 +138,7 @@ public class TeachersDB implements TPDI, TInfo {
             System.out.println("1 - Back\n2 - Exit");
             int choice = SchoolSystem.choice(1, 2);
             if (choice == 1) {
-                system.menu();
+                system.choicesMenu("user");
             } else if (choice == 2) {
                 System.exit(0);
             }
@@ -192,56 +201,47 @@ public class TeachersDB implements TPDI, TInfo {
     }
 
     public void addTeacher() {
-        sentinel = true;
-        teacherID();
-        String idNum = this.idString;
+        this.idString = findNextAvailableId();
+        System.out.println("Enter the following details for ID: " + this.idString);
+        System.out.println("Adding student with ID: " + this.idString);
 
-        while (sentinel) {
-            System.out.println("Add teacher? \n1 - Yes\n2 - No");
-            int userChoice = SchoolSystem.choice(1, 2);
+        name();
+        teachersData.info.get(this.idString).add(this.name);
 
-            if (userChoice == 1) {
-                System.out.println("Enter the following details for ID: " + idNum);
+        dob();
+        teachersData.info.get(this.idString).add(this.dob);
 
-                name();
-                teachersData.info.get(idNum).add(this.name);
+        contactDetails();
+        teachersData.info.get(this.idString).add(this.contact);
 
-                dob();
-                teachersData.info.get(idNum).add(this.dob);
+        gender();
+        teachersData.info.get(this.idString).add(this.gender);
 
-                contactDetails();
-                teachersData.info.get(idNum).add(this.contact);
+        assignedSubject();
+        teachersData.info.get(this.idString).add(this.subject);
 
-                gender();
-                teachersData.info.get(idNum).add(this.gender);
+        timeSchedule();
+        teachersData.info.get(this.idString).add(this.schedule);
 
-                assignedSubject();
-                teachersData.info.get(idNum).add(this.subject);
+        setPassword();
+        teachersData.info.get(this.idString).add(this.password);
 
-                timeSchedule();
-                teachersData.info.get(idNum).add(this.schedule);
+        try {
+            System.out.println("Teacher Added Successfully.");
+            teachersData.saveToFile(SchoolSystem.teacherFile);
+        } catch (Exception e) {
+            System.err.println("Error saving to file: " + e.getMessage());
+        }
 
-                setPassword();
-                teachersData.info.get(idNum).add(this.password);
+        System.out.println("Press 1 to quit\nPress 2 to go back");
+        int choice = SchoolSystem.choice(1, 2);
 
-                System.out.println("Teacher Added Successfully.");
-                teachersData.saveToFile(SchoolSystem.teacherFile);
-
-                System.out.println("Press 1 to quit\nPress 2 to go back");
-                int choice = SchoolSystem.choice(1, 2);
-
-                switch (choice) {
-                    case 1 -> {
-                        System.exit(0);
-                    }
-                    case 2 -> {
-                        displayAsAdmin();
-                    }
-                }
-
-            } else if (userChoice == 2) {
+        switch (choice) {
+            case 1 -> {
+                System.exit(0);
+            }
+            case 2 -> {
                 displayAsAdmin();
-                sentinel = false;
             }
         }
     }
@@ -291,7 +291,7 @@ public class TeachersDB implements TPDI, TInfo {
                 return;
             }
         }
-        
+
         if (teachersData.info.containsKey(selectedKey)) {
             ArrayList<String> details = teachersData.info.get(selectedKey);
             System.out.println("teacher to remove ID: " + selectedKey + " - Details: " + details);
@@ -339,11 +339,11 @@ public class TeachersDB implements TPDI, TInfo {
 
         System.out.print("Enter Teacher name to edit or type B to go back: ");
         String teacherName = s.nextLine().trim();
-        
+
         if (teacherName.equalsIgnoreCase("b")) {
             displayAsAdmin();
         }
-        
+
         List<String> matchedKeys = new ArrayList<>();
         for (String key : teachersData.info.keySet()) {
             ArrayList<String> details = teachersData.info.get(key);
