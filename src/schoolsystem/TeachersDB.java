@@ -101,15 +101,14 @@ public class TeachersDB implements TPDI, TInfo {
     @Override
     public void gender() {
         System.out.print("Enter Gender(Optional, Leave Blank): ");
-        String genderString = s.nextLine().strip();
-        if (!genderString.equalsIgnoreCase("Male") && !genderString.equals("Female") && !genderString.equalsIgnoreCase("M") && !genderString.equalsIgnoreCase("F")) {
+        String genderString = s.nextLine().trim();
+        if (!genderString.equalsIgnoreCase("Male") && !genderString.equalsIgnoreCase("Female") && !genderString.equalsIgnoreCase("M") && !genderString.equalsIgnoreCase("F")) {
             System.out.println("Enter a proper gender M/Male/F/Female");
             gender();
         } else if (genderString.isEmpty()) {
             this.gender = "Not given";
         } else {
-            System.out.println("Invalid gender. Use Male/Female or M/F.");
-            gender();
+            this.gender = genderString;
         }
 
     }

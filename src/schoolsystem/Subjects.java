@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package schoolsystem;
 
 import java.util.*;
@@ -43,6 +39,8 @@ class Course {
 }
 
 public class Subjects {
+
+    public static SchoolSystem system = new SchoolSystem();
 
     public LinkedList<Course> courses;
     private LinkedList<Subject> subjects;
@@ -223,62 +221,6 @@ public class Subjects {
             Course selectedCourse = courses.get(choice - 1);
 
             displaySubjectsForCourse(selectedCourse);
-
-            while (true) {
-                System.out.println("\nSub-Menu for Course '" + selectedCourse.name + "':");
-                System.out.println("1. Add Subject to Course");
-                System.out.println("2. Delete Subject from Course");
-                System.out.println("3. Check if Subject is in Course");
-                System.out.println("4. Retrieve Subjects for Course");
-                System.out.println("5. Back to Main Menu");
-                System.out.print("Choose a sub-option: ");
-
-                int subChoice = Integer.parseInt(scanner.nextLine());
-                switch (subChoice) {
-                    case 1 -> {
-                        listAllSubjects();
-                        System.out.print("Enter the number of the subject to add: ");
-                        try {
-                            int subjChoice = Integer.parseInt(scanner.nextLine());
-                            if (subjChoice < 1 || subjChoice > subjects.size()) {
-                                System.out.println("Invalid subject choice.");
-                            } else {
-                                Subject subjToAdd = subjects.get(subjChoice - 1);
-                                addSubjectToCourse(selectedCourse.name, subjToAdd.name);
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input.");
-                        }
-                    }
-                    case 2 -> {
-                        displaySubjectsForCourse(selectedCourse);
-                        System.out.print("Enter the number of the subject to delete: ");
-                        try {
-                            int subjChoice = Integer.parseInt(scanner.nextLine());
-                            if (subjChoice < 1 || subjChoice > selectedCourse.subjects.size()) {
-                                System.out.println("Invalid subject choice.");
-                            } else {
-                                Subject subjToDelete = selectedCourse.subjects.get(subjChoice - 1);
-                                deleteSubjectFromCourse(selectedCourse.name, subjToDelete.name);
-                            }
-                        } catch (NumberFormatException e) {
-                            System.out.println("Invalid input.");
-                        }
-                    }
-                    case 3 -> {
-                        System.out.print("Enter subject name to check: ");
-                        String subjName = scanner.nextLine();
-                        checkSubjectInCourse(selectedCourse.name, subjName);
-                    }
-                    case 4 ->
-                        displaySubjectsForCourse(selectedCourse);
-                    case 5 -> {
-                        return;
-                    }
-                    default ->
-                        System.out.println("Invalid sub-option. Try again.");
-                }
-            }
         } catch (NumberFormatException e) {
             System.err.println("Invalid input. Please enter a number.");
         }
@@ -366,8 +308,10 @@ public class Subjects {
                     retrieveSubjectsForCourse(SchoolSystem.s);
                 case 4 ->
                     retrieveCoursesForSubject(SchoolSystem.s);
-                case 5 ->
+                case 5 -> {
+                    system.choicesMenu("User");
                     loop = false;
+                }
             }
         }
     }
@@ -430,8 +374,10 @@ public class Subjects {
                     listAllCourses();
                 case 9 ->
                     listAllSubjects();
-                case 10 ->
+                case 10 -> {
+                    system.choicesMenu("Admin");
                     loop = false;
+                }
             }
         }
     }

@@ -12,12 +12,10 @@ public class Teachers {
 
     public DB handoutsData = new DB();
     private final List<String> handouts = new ArrayList<>();
-    private String schedule = "No schedule assigned.";
-    private String subject = "No subject assigned.";
     private boolean sentinel;
 
     private void loadHandouts() {
-        handoutsData.loadFromFile("Handoutsdatabase.txt");
+        handoutsData.loadFromFile(SchoolSystem.handoutFile);
         handouts.clear();
         for (Map.Entry<String, ArrayList<String>> entry : handoutsData.info.entrySet()) {
             if (!entry.getValue().isEmpty()) {
@@ -33,7 +31,7 @@ public class Teachers {
             details.add(handouts.get(i));
             handoutsData.info.put(String.valueOf(i + 1), details);
         }
-        handoutsData.saveToFile("Handoutsdatabase.txt");
+        handoutsData.saveToFile(SchoolSystem.handoutFile);
     }
 
     public void login() {
@@ -89,8 +87,8 @@ public class Teachers {
 
     public void teacherUserMenu() {
         System.out.println("\n--- Teacher User Menu ---");
-        System.out.println("1 - View Grades");
-        System.out.println("2 - View Handouts / Modules");
+        System.out.println("1 - View Grades of Students");
+        System.out.println("2 - View Handouts");
         System.out.println("3 - View Available rooms");
         System.out.println("4 - Back");
         System.out.println("5 - Exit");
@@ -112,8 +110,8 @@ public class Teachers {
 
     public void teacherAdminMenu() {
         System.out.println("\n--- Teacher Admin Menu ---");
-        System.out.println("1 - Read/Write Grades");
-        System.out.println("2 - Read/Write Handouts");
+        System.out.println("1 - Edit Grades");
+        System.out.println("2 - Write Handouts");
         System.out.println("3 - Book Available Room");
         System.out.println("4 - Back");
         System.out.println("5 - Exit");

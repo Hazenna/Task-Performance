@@ -391,7 +391,7 @@ public class StudentsDB implements PDI, APD, ASF {
         System.out.println("DOB: " + details.get(1));
         System.out.println("Contact: " + details.get(2));
         System.out.println("Gender: " + details.get(3));
-        System.out.println("Course: " + details.get(5));
+        System.out.println("Course: " + details.get(9));
 
         System.out.println("1 - Update Name");
         System.out.println("2 - Update DOB");
@@ -420,7 +420,7 @@ public class StudentsDB implements PDI, APD, ASF {
             }
             case 5 -> {
                 courseInformation();
-                details.set(5, course);
+                details.set(9, course);
             }
             case 6 ->
                 displayAsAdmin();
